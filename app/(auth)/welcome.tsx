@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
 import Colors from '@/constants/Colors';
 import Button from '@/components/Button';
@@ -26,7 +26,7 @@ export default function WelcomeScreen() {
         <View style={styles.textContainer}>
           <Text style={styles.welcomeText}>Welcome to GreenCart</Text>
           <Text style={styles.subtitleText}>
-            Your one-stop shop for fresh groceries
+            Your home for fresh groceries and delicious recipes
           </Text>
         </View>
         
@@ -55,13 +55,13 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: 'space-between',
     padding: 20,
   },
   logoContainer: {
     flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 60,
   },
   textContainer: {
     flex: 1,
@@ -70,19 +70,21 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     fontFamily: 'Poppins-Bold',
-    fontSize: 24,
+    fontSize: 28,
     color: Colors.text.primary,
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   subtitleText: {
     fontFamily: 'Poppins-Regular',
     fontSize: 16,
     color: Colors.text.secondary,
     textAlign: 'center',
+    paddingHorizontal: 20,
   },
   buttonContainer: {
-    marginTop: 40,
+    marginTop: 'auto',
+    marginBottom: 40,
   },
   button: {
     marginBottom: 16,

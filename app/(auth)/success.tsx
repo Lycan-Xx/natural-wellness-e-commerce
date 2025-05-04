@@ -8,8 +8,9 @@ export default function SuccessScreen() {
   const router = useRouter();
   
   useEffect(() => {
-    // Redirect to main app after 2 seconds
+    // Simulate storing auth token or user data
     const timer = setTimeout(() => {
+      // Replace the entire navigation state with tabs
       router.replace('/(tabs)');
     }, 2000);
     
@@ -28,9 +29,9 @@ export default function SuccessScreen() {
           loop={false}
         />
         
-        <Text style={styles.title}>Congratulations!</Text>
+        <Text style={styles.title}>Welcome to GreenCart!</Text>
         <Text style={styles.subtitle}>
-          You've successfully signed in to GreenCart
+          Your account has been created successfully
         </Text>
       </View>
     </View>

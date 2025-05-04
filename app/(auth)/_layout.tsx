@@ -1,8 +1,9 @@
-import { Stack } from 'expo-router';
+import { Stack, SplashScreen, Redirect } from 'expo-router';
 import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function AuthLayout() {
+  // Redirect to welcome screen by default
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Stack
@@ -20,6 +21,13 @@ export default function AuthLayout() {
           }),
         }}
       >
+        <Stack.Screen 
+          name="index" 
+          redirect={true}
+          options={{
+            headerShown: false,
+          }}
+        />
         <Stack.Screen name="welcome" />
         <Stack.Screen name="signin" />
         <Stack.Screen name="signup" />
