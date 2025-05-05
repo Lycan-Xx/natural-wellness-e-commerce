@@ -24,7 +24,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="browse"
         options={{
-          title: 'Explore',
+          title: 'Browse',
           tabBarIcon: ({ color, size }) => <Search size={size} color={color} />,
         }}
       />
@@ -35,7 +35,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => <ShoppingBag size={size} color={color} />,
         }}
       />
-
+    
       <Tabs.Screen
         name="profile"
         options={{

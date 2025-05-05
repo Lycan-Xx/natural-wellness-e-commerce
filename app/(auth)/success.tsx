@@ -6,29 +6,29 @@ import Colors from '@/constants/Colors';
 
 export default function SuccessScreen() {
   const router = useRouter();
-  
+
   useEffect(() => {
     // Simulate storing auth token or user data
     const timer = setTimeout(() => {
       // Replace the entire navigation state with tabs
       router.replace('/(tabs)');
     }, 2000);
-    
+
     return () => clearTimeout(timer);
   }, []);
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         <LottieView
           source={{
-            uri: 'https://assets1.lottiefiles.com/packages/lf20_swnrn2hg.json',
+            uri: 'https://assets2.lottiefiles.com/packages/lf20_s2lryxtd.json',
           }}
           style={styles.animation}
           autoPlay
           loop={false}
         />
-        
+
         <Text style={styles.title}>Welcome to GreenCart!</Text>
         <Text style={styles.subtitle}>
           Your account has been created successfully

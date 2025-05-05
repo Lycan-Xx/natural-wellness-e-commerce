@@ -21,8 +21,8 @@ export default function AuthLayout() {
           }),
         }}
       >
-        <Stack.Screen 
-          name="index" 
+        <Stack.Screen
+          name="index"
           redirect={true}
           options={{
             headerShown: false,
@@ -31,8 +31,8 @@ export default function AuthLayout() {
         <Stack.Screen name="welcome" />
         <Stack.Screen name="signin" />
         <Stack.Screen name="signup" />
-        <Stack.Screen 
-          name="forgot-password" 
+        <Stack.Screen
+          name="forgot-password"
           options={{
             presentation: 'modal',
             animation: 'slide_from_bottom',
@@ -40,8 +40,8 @@ export default function AuthLayout() {
         />
         <Stack.Screen name="otp-verification" />
         <Stack.Screen name="new-password" />
-        <Stack.Screen 
-          name="success" 
+        <Stack.Screen
+          name="success"
           options={{
             presentation: 'transparentModal',
             animation: 'fade',

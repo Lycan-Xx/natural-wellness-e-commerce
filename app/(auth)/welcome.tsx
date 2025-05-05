@@ -22,23 +22,23 @@ export default function WelcomeScreen() {
         <View style={styles.logoContainer}>
           <GreenCartLogo size="large" />
         </View>
-        
+
         <View style={styles.textContainer}>
           <Text style={styles.welcomeText}>Welcome to GreenCart</Text>
           <Text style={styles.subtitleText}>
             Your home for fresh groceries and delicious recipes
           </Text>
         </View>
-        
+
         <View style={styles.buttonContainer}>
-          <Button 
-            title="Create Account" 
-            onPress={handleSignUp} 
+          <Button
+            title="Create Account"
+            onPress={handleSignUp}
             style={styles.button}
           />
-          <Button 
-            title="Sign In" 
-            onPress={handleSignIn} 
+          <Button
+            title="Sign In"
+            onPress={handleSignIn}
             variant="outline"
             style={styles.button}
           />
