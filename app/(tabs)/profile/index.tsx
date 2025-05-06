@@ -8,6 +8,7 @@ import {
   Image,
   TouchableOpacity,
   Switch,
+  Modal,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
@@ -27,6 +28,7 @@ import {
   Edit2,
 } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
+import Button from '@/components/Button';
 
 interface SettingsSectionProps {
   title: string;
@@ -60,13 +62,23 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({ title, items }) => (
 export default function ProfileScreen() {
   const router = useRouter();
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleEditProfile = () => {
     router.push('/profile/edit');
   };
 
+  const handleLogoutPress = () => {
+    setShowLogoutModal(true);
+  };
+
   const handleLogout = () => {
+    setShowLogoutModal(false);
     router.replace('/(auth)/welcome');
+  };
+
+  const handleCancelLogout = () => {
+    setShowLogoutModal(false);
   };
 
   return (
@@ -138,7 +150,7 @@ export default function ProfileScreen() {
             {
               icon: <LogOut size={20} color={Colors.error} />,
               title: "Log Out",
-              onPress: handleLogout,
+              onPress: handleLogoutPress,
             },
           ]}
         />
@@ -180,6 +192,33 @@ export default function ProfileScreen() {
           ]}
         />
       </ScrollView>
+
+      <Modal
+        visible={showLogoutModal}
+        transparent
+        animationType="fade"
+        onRequestClose={handleCancelLogout}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Log Out</Text>
+            <Text style={styles.modalText}>Are you sure you want to log out?</Text>
+            <View style={styles.modalButtons}>
+              <Button
+                title="Cancel"
+                onPress={handleCancelLogout}
+                variant="outline"
+                style={styles.modalButton}
+              />
+              <Button
+                title="Log Out"
+                onPress={handleLogout}
+                style={[styles.modalButton, styles.logoutButton]}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -251,5 +290,42 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.text.primary,
     marginLeft: 12,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: Colors.white,
+    borderRadius: 12,
+    padding: 24,
+    width: '100%',
+    maxWidth: 340,
+  },
+  modalTitle: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 20,
+    color: Colors.text.primary,
+    marginBottom: 8,
+  },
+  modalText: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 16,
+    color: Colors.text.secondary,
+    marginBottom: 24,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  modalButton: {
+    flex: 1,
+  },
+  logoutButton: {
+    backgroundColor: Colors.error,
   },
 });
