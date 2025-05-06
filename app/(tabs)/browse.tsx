@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,9 +9,10 @@ import {
   FlatList,
   Image,
   Modal,
+  Animated,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Search } from 'lucide-react-native';
+import { Search, Check } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import Input from '@/components/Input';
 import ProductCard from '@/components/ProductCard';
@@ -28,6 +29,9 @@ export default function BrowseScreen() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
+  const [addingToCart, setAddingToCart] = useState(false);
+  const buttonOpacity = new Animated.Value(1);
+  const checkmarkOpacity = new Animated.Value(0);
 
   const filteredProducts = products.filter((product) => {
     const matchesCategory = selectedCategory === 'all' || 
@@ -48,11 +52,47 @@ export default function BrowseScreen() {
     }
   };
 
+  const playAddToCartAnimation = () => {
+    setAddingToCart(true);
+    
+    // Fade out button text
+    Animated.timing(buttonOpacity, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: true
+    }).start();
+    
+    // Fade in checkmark
+    Animated.timing(checkmarkOpacity, {
+      toValue: 1,
+      duration: 200,
+      useNativeDriver: true
+    }).start();
+    
+    // Reset animation after delay
+    setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(buttonOpacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true
+        }),
+        Animated.timing(checkmarkOpacity, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true
+        })
+      ]).start(() => {
+        setAddingToCart(false);
+      });
+    }, 1500);
+  };
+
   const handleAddToCart = () => {
-    if (selectedProduct) {
+    if (selectedProduct && !addingToCart) {
       addToCart(selectedProduct, quantity);
-      router.push('/cart');
-      setSelectedProduct(null);
+      playAddToCartAnimation();
+      // No redirect to cart page
     }
   };
 
@@ -141,21 +181,19 @@ export default function BrowseScreen() {
                 <View style={styles.quantityContainer}>
                   <Text style={styles.quantityLabel}>Quantity</Text>
                   <View style={styles.quantityControls}>
-                    <Button
-                      title="-"
+                    <TouchableOpacity
+                      style={styles.quantityButton}
                       onPress={() => handleQuantityChange(-1)}
-                      variant="outline"
-                      style={styles.quantityButton}
-                      textStyle={styles.quantityButtonText}
-                    />
+                    >
+                      <Text style={styles.quantityButtonText}>-</Text>
+                    </TouchableOpacity>
                     <Text style={styles.quantityText}>{quantity}</Text>
-                    <Button
-                      title="+"
-                      onPress={() => handleQuantityChange(1)}
-                      variant="outline"
+                    <TouchableOpacity
                       style={styles.quantityButton}
-                      textStyle={styles.quantityButtonText}
-                    />
+                      onPress={() => handleQuantityChange(1)}
+                    >
+                      <Text style={styles.quantityButtonText}>+</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
                 
@@ -169,11 +207,20 @@ export default function BrowseScreen() {
             </ScrollView>
             
             <View style={styles.footer}>
-              <Button
-                title="Add to Cart"
+              <TouchableOpacity
+                style={[styles.addToCartButton, addingToCart && styles.addToCartButtonSuccess]}
                 onPress={handleAddToCart}
-                style={styles.addToCartButton}
-              />
+                disabled={addingToCart}
+              >
+                <Animated.Text 
+                  style={[styles.addToCartButtonText, { opacity: buttonOpacity }]}>
+                  Add to Cart
+                </Animated.Text>
+                <Animated.View 
+                  style={[styles.checkmarkContainer, { opacity: checkmarkOpacity }]}>
+                  <Check size={24} color={Colors.white} />
+                </Animated.View>
+              </TouchableOpacity>
               <Button
                 title="Checkout"
                 onPress={() => router.push('/cart')}
@@ -289,10 +336,17 @@ const styles = StyleSheet.create({
   quantityButton: {
     width: 40,
     height: 40,
-    padding: 0,
+    backgroundColor: Colors.background,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   quantityButtonText: {
+    fontFamily: 'Poppins-Bold',
     fontSize: 20,
+    color: Colors.text.primary,
   },
   quantityText: {
     fontFamily: 'Poppins-Medium',
@@ -327,7 +381,26 @@ const styles = StyleSheet.create({
     borderTopColor: Colors.border,
   },
   addToCartButton: {
+    backgroundColor: Colors.primary,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 12,
+    overflow: 'hidden',
+  },
+  addToCartButtonSuccess: {
+    backgroundColor: '#4CAF50', // Success green color
+  },
+  addToCartButtonText: {
+    color: Colors.white,
+    fontFamily: 'Poppins-Bold',
+    fontSize: 16,
+  },
+  checkmarkContainer: {
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   checkoutButton: {
     marginBottom: 0,
