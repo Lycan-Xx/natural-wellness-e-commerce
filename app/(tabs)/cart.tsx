@@ -12,7 +12,6 @@ import { Trash2, Plus, Minus } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import Button from '@/components/Button';
 import { useCart } from '@/context/CartContext';
-import GreenCartLogo from '@/components/GreenCartLogo';
 
 export default function CartScreen() {
   const { items, removeFromCart, updateQuantity, total } = useCart();
@@ -27,7 +26,6 @@ export default function CartScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <GreenCartLogo size="small" />
         <Text style={styles.title}>My Cart</Text>
       </View>
 

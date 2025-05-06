@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { StyleSheet } from 'react-native';
-import { ShoppingBag, Chrome as Home, User, Search, Heart } from 'lucide-react-native';
+import { Store, ShoppingCart, UserCircle, Search } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 
 export default function TabLayout() {
@@ -18,29 +18,29 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => <Store size={size} color={color} />,
         }}
       />
-      <Tabs.Screen
+            <Tabs.Screen
         name="browse"
         options={{
           title: 'Browse',
           tabBarIcon: ({ color, size }) => <Search size={size} color={color} />,
         }}
       />
+
       <Tabs.Screen
         name="cart"
         options={{
           title: 'Cart',
-          tabBarIcon: ({ color, size }) => <ShoppingBag size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => <ShoppingCart size={size} color={color} />,
         }}
       />
-    
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => <UserCircle size={size} color={color} />,
         }}
       />
     </Tabs>
