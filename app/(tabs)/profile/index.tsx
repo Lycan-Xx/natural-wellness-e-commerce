@@ -115,12 +115,12 @@ export default function ProfileScreen() {
             {
               icon: <MapPin size={20} color={Colors.text.secondary} />,
               title: "Address",
-              onPress: () => {},
+              onPress: () => router.push('/profile/address'),
             },
             {
               icon: <CreditCard size={20} color={Colors.text.secondary} />,
               title: "Payment Methods",
-              onPress: () => {},
+              onPress: () => router.push('/profile/payment'),
             },
             {
               icon: <Moon size={20} color={Colors.text.secondary} />,
@@ -149,7 +149,7 @@ export default function ProfileScreen() {
             {
               icon: <Globe size={20} color={Colors.text.secondary} />,
               title: "Language",
-              onPress: () => {},
+              onPress: () => router.push('/profile/language'),
             },
             {
               icon: <Bell size={20} color={Colors.text.secondary} />,
