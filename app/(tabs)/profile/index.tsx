@@ -26,6 +26,7 @@ import {
   Headphones,
   ChevronRight,
   Edit2,
+  PlaneIcon
 } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import Button from '@/components/Button';
@@ -111,6 +112,11 @@ export default function ProfileScreen() {
             {
               icon: <Heart size={20} color={Colors.text.secondary} />,
               title: "Wishlist",
+              onPress: () => {},
+            },
+            {
+              icon: <PlaneIcon size={20} color={Colors.text.secondary} />,
+              title: "Tracking",
               onPress: () => {},
             },
             {

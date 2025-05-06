@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,68 +6,175 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Modal,
+  FlatList,
+  Alert,
 } from 'react-native';
-import { CreditCard, Wallet } from 'lucide-react-native';
+import { CreditCard, Plus, Edit2, Trash2 } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
 import HeaderBar from '@/components/HeaderBar';
-import { Picker } from '@react-native-picker/picker';
-
-const cryptoOptions = [
-  'Bitcoin (BTC)',
-  'Ethereum (ETH)',
-  'Binance Coin (BNB)',
-  'Cardano (ADA)',
-];
 
 export default function PaymentMethodsScreen() {
   const [showCardModal, setShowCardModal] = useState(false);
-  const [showCryptoModal, setShowCryptoModal] = useState(false);
+  const [cards, setCards] = useState([]);
   const [cardData, setCardData] = useState({
+    id: '',
     number: '',
     name: '',
     expiry: '',
     cvv: '',
   });
-  const [cryptoData, setCryptoData] = useState({
-    type: cryptoOptions[0],
-    address: '',
-  });
+  const [isEditing, setIsEditing] = useState(false);
+
+  const resetCardForm = () => {
+    setCardData({
+      id: '',
+      number: '',
+      name: '',
+      expiry: '',
+      cvv: '',
+    });
+    setIsEditing(false);
+  };
+
+  const handleCloseModal = () => {
+    setShowCardModal(false);
+    resetCardForm();
+  };
+
+  const handleAddCard = () => {
+    // Basic validation
+    if (!cardData.number || !cardData.name || !cardData.expiry || !cardData.cvv) {
+      Alert.alert('Missing Information', 'Please fill in all the fields.');
+      return;
+    }
+
+    if (isEditing) {
+      // Update existing card
+      const updatedCards = cards.map(card => 
+        card.id === cardData.id ? cardData : card
+      );
+      setCards(updatedCards);
+    } else {
+      // Add new card with unique ID
+      const newCard = {
+        ...cardData,
+        id: Date.now().toString(),
+      };
+      setCards([...cards, newCard]);
+    }
+    
+    handleCloseModal();
+  };
+
+  const handleEditCard = (card) => {
+    setCardData(card);
+    setIsEditing(true);
+    setShowCardModal(true);
+  };
+
+  const handleDeleteCard = (cardId) => {
+    Alert.alert(
+      'Delete Card',
+      'Are you sure you want to delete this card?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: () => {
+            const updatedCards = cards.filter(card => card.id !== cardId);
+            setCards(updatedCards);
+          },
+          style: 'destructive',
+        },
+      ]
+    );
+  };
+
+  const formatCardNumber = (number) => {
+    // Show only last 4 digits for security
+    if (number.length >= 4) {
+      return '•••• •••• •••• ' + number.slice(-4);
+    }
+    return number;
+  };
+
+  const renderCardItem = ({ item }) => (
+    <View style={styles.cardItem}>
+      <View style={styles.cardItemContent}>
+        <CreditCard size={24} color={Colors.primary} />
+        <View style={styles.cardDetails}>
+          <Text style={styles.cardNumber}>{formatCardNumber(item.number)}</Text>
+          <Text style={styles.cardName}>{item.name}</Text>
+          <Text style={styles.cardExpiry}>Expires: {item.expiry}</Text>
+        </View>
+      </View>
+      <View style={styles.cardActions}>
+        <TouchableOpacity 
+          style={styles.actionButton} 
+          onPress={() => handleEditCard(item)}
+        >
+          <Edit2 size={18} color={Colors.primary} />
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.actionButton} 
+          onPress={() => handleDeleteCard(item.id)}
+        >
+          <Trash2 size={18} color="#FF4747" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  const renderEmptyState = () => (
+    <View style={styles.emptyState}>
+      <CreditCard size={48} color={Colors.text.secondary} />
+      <Text style={styles.emptyStateText}>No payment cards added yet</Text>
+      <Text style={styles.emptyStateSubText}>
+        Add a card to make checkout faster
+      </Text>
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
       <HeaderBar title="Payment Methods" />
       
       <View style={styles.content}>
-        <View style={styles.grid}>
-          <TouchableOpacity
-            style={styles.gridItem}
-            onPress={() => setShowCardModal(true)}
-          >
-            <CreditCard size={32} color={Colors.primary} />
-            <Text style={styles.gridItemText}>Card</Text>
-          </TouchableOpacity>
+        <FlatList
+          data={cards}
+          renderItem={renderCardItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.cardsList}
+          ListEmptyComponent={renderEmptyState}
+        />
 
-          <TouchableOpacity
-            style={styles.gridItem}
-            onPress={() => setShowCryptoModal(true)}
-          >
-            <Wallet size={32} color={Colors.primary} />
-            <Text style={styles.gridItemText}>Crypto</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => {
+            resetCardForm();
+            setShowCardModal(true);
+          }}
+        >
+          <Plus size={24} color={Colors.white} />
+          <Text style={styles.addButtonText}>Add New Card</Text>
+        </TouchableOpacity>
 
         {/* Card Modal */}
         <Modal
           visible={showCardModal}
           animationType="slide"
-          onRequestClose={() => setShowCardModal(false)}
+          onRequestClose={handleCloseModal}
         >
           <SafeAreaView style={styles.modalContainer}>
             <HeaderBar
-              title="Add Card"
-              onBackPress={() => setShowCardModal(false)}
+              title={isEditing ? "Edit Card" : "Add Card"}
+              showBackButton={true}
+              onBackPress={handleCloseModal}
             />
             
             <View style={styles.modalContent}>
@@ -77,6 +184,7 @@ export default function PaymentMethodsScreen() {
                 onChangeText={(text) => setCardData({ ...cardData, number: text })}
                 keyboardType="numeric"
                 placeholder="1234 5678 9012 3456"
+                maxLength={16}
               />
 
               <Input
@@ -93,6 +201,7 @@ export default function PaymentMethodsScreen() {
                   onChangeText={(text) => setCardData({ ...cardData, expiry: text })}
                   placeholder="MM/YY"
                   containerStyle={{ flex: 1, marginRight: 8 }}
+                  maxLength={5}
                 />
 
                 <Input
@@ -103,53 +212,13 @@ export default function PaymentMethodsScreen() {
                   containerStyle={{ flex: 1, marginLeft: 8 }}
                   keyboardType="numeric"
                   maxLength={3}
+                  secureTextEntry={true}
                 />
               </View>
 
               <Button
-                title="Save Card"
-                onPress={() => setShowCardModal(false)}
-                style={styles.submitButton}
-              />
-            </View>
-          </SafeAreaView>
-        </Modal>
-
-        {/* Crypto Modal */}
-        <Modal
-          visible={showCryptoModal}
-          animationType="slide"
-          onRequestClose={() => setShowCryptoModal(false)}
-        >
-          <SafeAreaView style={styles.modalContainer}>
-            <HeaderBar
-              title="Add Crypto Wallet"
-              onBackPress={() => setShowCryptoModal(false)}
-            />
-            
-            <View style={styles.modalContent}>
-              <Text style={styles.label}>Cryptocurrency</Text>
-              <View style={styles.pickerContainer}>
-                <Picker
-                  selectedValue={cryptoData.type}
-                  onValueChange={(value) => setCryptoData({ ...cryptoData, type: value })}
-                >
-                  {cryptoOptions.map((crypto) => (
-                    <Picker.Item key={crypto} label={crypto} value={crypto} />
-                  ))}
-                </Picker>
-              </View>
-
-              <Input
-                label="Wallet Address"
-                value={cryptoData.address}
-                onChangeText={(text) => setCryptoData({ ...cryptoData, address: text })}
-                placeholder="Enter your wallet address"
-              />
-
-              <Button
-                title="Save Wallet"
-                onPress={() => setShowCryptoModal(false)}
+                title={isEditing ? "Update Card" : "Save Card"}
+                onPress={handleAddCard}
                 style={styles.submitButton}
               />
             </View>
@@ -166,20 +235,19 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   content: {
+    flex: 1,
     padding: 20,
   },
-  grid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
+  cardsList: {
+    flexGrow: 1,
   },
-  gridItem: {
-    flex: 1,
-    aspectRatio: 1,
+  cardItem: {
     backgroundColor: Colors.white,
     borderRadius: 12,
-    margin: 8,
-    justifyContent: 'center',
+    padding: 16,
+    marginBottom: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -190,11 +258,73 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  gridItemText: {
+  cardItemContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  cardDetails: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  cardNumber: {
     fontFamily: 'Poppins-Medium',
     fontSize: 16,
     color: Colors.text.primary,
+  },
+  cardName: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 14,
+    color: Colors.text.secondary,
+    marginTop: 2,
+  },
+  cardExpiry: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 12,
+    color: Colors.text.secondary,
+    marginTop: 2,
+  },
+  cardActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionButton: {
+    padding: 8,
+    marginLeft: 8,
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
+  },
+  emptyStateText: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 18,
+    color: Colors.text.primary,
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  emptyStateSubText: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 14,
+    color: Colors.text.secondary,
     marginTop: 8,
+    textAlign: 'center',
+  },
+  addButton: {
+    backgroundColor: Colors.primary,
+    borderRadius: 12,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 16,
+    marginTop: 12,
+  },
+  addButtonText: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 16,
+    color: Colors.white,
+    marginLeft: 8,
   },
   modalContainer: {
     flex: 1,
@@ -206,19 +336,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     marginBottom: 16,
-  },
-  label: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 14,
-    color: Colors.text.primary,
-    marginBottom: 8,
-  },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 8,
-    marginBottom: 16,
-    backgroundColor: Colors.white,
   },
   submitButton: {
     marginTop: 24,
