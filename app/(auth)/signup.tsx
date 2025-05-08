@@ -5,6 +5,7 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Formik } from 'formik';
@@ -16,17 +17,25 @@ import PasswordInput from '@/components/PasswordInput';
 import HeaderBar from '@/components/HeaderBar';
 import PasswordRequirements from '@/components/PasswordRequirements';
 import { SignUpSchema } from '@/utils/validation';
+import { useAuth } from '@/context/AuthContext';
+import { UserRole } from '@/types/user';
 
 export default function SignUpScreen() {
   const router = useRouter();
+  const { signUp } = useAuth();
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSignUp = (values: any) => {
-    console.log('Sign up with:', values);
-    // In a real app, you would register the user here
-    // For this demo, we'll navigate to the success screen
-    setTimeout(() => {
-      router.push('/success');
-    }, 1000);
+  const handleSignUp = async (values: any) => {
+    try {
+      await signUp(values.email, values.password, values.fullName, values.role);
+      if (values.role === 'vendor') {
+        router.replace('/(vendor)');
+      } else {
+        router.replace('/(tabs)');
+      }
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
 
   return (
@@ -43,6 +52,7 @@ export default function SignUpScreen() {
             email: '',
             password: '',
             confirmPassword: '',
+            role: 'customer' as UserRole,
           }}
           validationSchema={SignUpSchema}
           onSubmit={handleSignUp}
@@ -55,6 +65,7 @@ export default function SignUpScreen() {
             errors,
             touched,
             isSubmitting,
+            setFieldValue,
           }) => (
             <View style={styles.formContainer}>
               <Input
@@ -102,6 +113,46 @@ export default function SignUpScreen() {
                 error={errors.confirmPassword}
                 touched={touched.confirmPassword}
               />
+
+              <View style={styles.roleContainer}>
+                <Text style={styles.roleLabel}>I want to:</Text>
+                <View style={styles.roleOptions}>
+                  <TouchableOpacity
+                    style={[
+                      styles.roleOption,
+                      values.role === 'customer' && styles.roleOptionSelected,
+                    ]}
+                    onPress={() => setFieldValue('role', 'customer')}
+                  >
+                    <Text
+                      style={[
+                        styles.roleText,
+                        values.role === 'customer' && styles.roleTextSelected,
+                      ]}
+                    >
+                      Shop Products
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.roleOption,
+                      values.role === 'vendor' && styles.roleOptionSelected,
+                    ]}
+                    onPress={() => setFieldValue('role', 'vendor')}
+                  >
+                    <Text
+                      style={[
+                        styles.roleText,
+                        values.role === 'vendor' && styles.roleTextSelected,
+                      ]}
+                    >
+                      Sell Products
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {error && <Text style={styles.errorText}>{error}</Text>}
               
               <Button
                 title="Create Account"
@@ -127,6 +178,47 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     marginTop: 20,
+  },
+  roleContainer: {
+    marginBottom: 24,
+  },
+  roleLabel: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 14,
+    color: Colors.text.primary,
+    marginBottom: 8,
+  },
+  roleOptions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  roleOption: {
+    flex: 1,
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    backgroundColor: Colors.white,
+    alignItems: 'center',
+  },
+  roleOptionSelected: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  roleText: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 14,
+    color: Colors.text.primary,
+  },
+  roleTextSelected: {
+    color: Colors.white,
+  },
+  errorText: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 14,
+    color: Colors.error,
+    marginBottom: 16,
+    textAlign: 'center',
   },
   createAccountButton: {
     marginTop: 24,

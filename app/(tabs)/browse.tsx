@@ -92,7 +92,7 @@ export default function BrowseScreen() {
     if (selectedProduct && !addingToCart) {
       addToCart(selectedProduct, quantity);
       playAddToCartAnimation();
-      setAddingToCart(true); // Set addingToCart to true to update button text
+      // No redirect to cart page
     }
   };
 
@@ -213,16 +213,20 @@ export default function BrowseScreen() {
                 disabled={addingToCart}
               >
                 <Animated.Text 
-                  style={[styles.addToCartButtonText, { opacity: buttonOpacity }]}
-                >
-                  {addingToCart ? "Added to Cart" : "Add to Cart"}
+                  style={[styles.addToCartButtonText, { opacity: buttonOpacity }]}>
+                  Add to Cart
                 </Animated.Text>
                 <Animated.View 
-                  style={[styles.checkmarkContainer, { opacity: checkmarkOpacity }]}
-                >
+                  style={[styles.checkmarkContainer, { opacity: checkmarkOpacity }]}>
                   <Check size={24} color={Colors.white} />
                 </Animated.View>
               </TouchableOpacity>
+              <Button
+                title="Checkout"
+                onPress={() => router.push('/cart')}
+                variant="outline"
+                style={styles.checkoutButton}
+              />
             </View>
           </SafeAreaView>
         )}
@@ -397,5 +401,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  checkoutButton: {
+    marginBottom: 0,
   },
 });

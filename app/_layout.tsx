@@ -9,7 +9,7 @@ import {
   Poppins_700Bold,
 } from '@expo-google-fonts/poppins';
 import { SplashScreen } from 'expo-router';
-import { CartProvider } from '@/context/CartContext';
+import { AuthProvider } from '@/context/AuthContext';
 
 // Prevent the splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
@@ -36,13 +36,14 @@ export default function RootLayout() {
   }
 
   return (
-    <CartProvider>
+    <AuthProvider>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(vendor)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
-    </CartProvider>
+    </AuthProvider>
   );
 }

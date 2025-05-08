@@ -20,20 +20,20 @@ const shippingOptions = [
     id: 'fast',
     name: 'Lightning fast',
     duration: '3 - 5 days',
-    price: 15.99
+    price: 15.99,
   },
   {
     id: 'standard',
     name: 'On time',
     duration: '1 week',
-    price: 9.99
+    price: 9.99,
   },
   {
     id: 'economy',
     name: 'Till it arrives',
     duration: '2 to 3 weeks',
-    price: 4.99
-  }
+    price: 4.99,
+  },
 ];
 
 export default function CartScreen() {
@@ -43,7 +43,11 @@ export default function CartScreen() {
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [selectedShipping, setSelectedShipping] = useState(shippingOptions[0]);
 
-  const handleQuantityChange = (productId: string, currentQuantity: number, increment: number) => {
+  const handleQuantityChange = (
+    productId: string,
+    currentQuantity: number,
+    increment: number
+  ) => {
     const newQuantity = currentQuantity + increment;
     if (newQuantity >= 1) {
       updateQuantity(productId, newQuantity);
@@ -64,12 +68,12 @@ export default function CartScreen() {
       onRequestClose={() => setShowCheckoutModal(false)}
     >
       <SafeAreaView style={styles.modalContainer}>
-        <HeaderBar 
-          title="Check Out" 
+        <HeaderBar
+          title="Check Out"
           showBackButton={true}
           onBackPress={() => setShowCheckoutModal(false)}
         />
-        
+
         <ScrollView style={styles.modalContent}>
           {/* Address Section */}
           <View style={styles.section}>
@@ -96,7 +100,9 @@ export default function CartScreen() {
                 <Image source={{ uri: item.image }} style={styles.itemImage} />
                 <View style={styles.itemInfo}>
                   <Text style={styles.itemName}>{item.name}</Text>
-                  <Text style={styles.itemQuantity}>Quantity: {item.quantity}</Text>
+                  <Text style={styles.itemQuantity}>
+                    Quantity: {item.quantity}
+                  </Text>
                   <Text style={styles.itemPrice}>
                     ${(item.price * item.quantity).toFixed(2)}
                   </Text>
@@ -115,7 +121,9 @@ export default function CartScreen() {
               <View style={styles.shippingInfo}>
                 <Truck size={24} color={Colors.text.secondary} />
                 <View style={styles.shippingDetails}>
-                  <Text style={styles.shippingName}>{selectedShipping.name}</Text>
+                  <Text style={styles.shippingName}>
+                    {selectedShipping.name}
+                  </Text>
                   <Text style={styles.shippingDuration}>
                     {selectedShipping.duration}
                   </Text>
@@ -148,10 +156,7 @@ export default function CartScreen() {
 
         {/* Bottom Button */}
         <View style={styles.footer}>
-          <Button
-            title="Proceed to Payment"
-            onPress={handleProceedToPayment}
-          />
+          <Button title="Proceed to Payment" onPress={handleProceedToPayment} />
         </View>
       </SafeAreaView>
     </Modal>
@@ -209,23 +214,27 @@ export default function CartScreen() {
         {items.map((item) => (
           <View key={item.id} style={styles.cartItem}>
             <Image source={{ uri: item.image }} style={styles.cartItemImage} />
-            
+
             <View style={styles.itemDetails}>
               <Text style={styles.itemName}>{item.name}</Text>
               <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
-              
+
               <View style={styles.quantityContainer}>
                 <TouchableOpacity
-                  onPress={() => handleQuantityChange(item.id, item.quantity, -1)}
+                  onPress={() =>
+                    handleQuantityChange(item.id, item.quantity, -1)
+                  }
                   style={styles.quantityButton}
                 >
                   <Minus size={16} color={Colors.text.primary} />
                 </TouchableOpacity>
-                
+
                 <Text style={styles.quantityText}>{item.quantity}</Text>
-                
+
                 <TouchableOpacity
-                  onPress={() => handleQuantityChange(item.id, item.quantity, 1)}
+                  onPress={() =>
+                    handleQuantityChange(item.id, item.quantity, 1)
+                  }
                   style={styles.quantityButton}
                 >
                   <Plus size={16} color={Colors.text.primary} />

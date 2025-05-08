@@ -19,9 +19,12 @@ import CheckBox from '@/components/CheckBox';
 import Divider from '@/components/Divider';
 import SocialButton from '@/components/SocialButton';
 import { SignInSchema } from '@/utils/validation';
+import { useAuth } from '@/context/AuthContext';
 
 export default function SignInScreen() {
   const router = useRouter();
+  const { signIn } = useAuth();
+  const [error, setError] = useState<string | null>(null);
   
   const handleCreateAccount = () => {
     router.push('/signup');
@@ -31,13 +34,13 @@ export default function SignInScreen() {
     router.push('/forgot-password');
   };
 
-  const handleSignIn = (values: any) => {
-    console.log('Sign in with:', values);
-    // In a real app, you would authenticate the user here
-    // For this demo, we'll navigate to the main app
-    setTimeout(() => {
-      router.push('/success');
-    }, 1000);
+  const handleSignIn = async (values: any) => {
+    try {
+      await signIn(values.email, values.password);
+      // Navigation will be handled by the AuthContext
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
 
   const handleGoogleSignIn = () => {
@@ -113,6 +116,8 @@ export default function SignInScreen() {
                   <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
                 </TouchableOpacity>
               </View>
+
+              {error && <Text style={styles.errorText}>{error}</Text>}
               
               <Button
                 title="Sign In"
@@ -169,6 +174,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Medium',
     fontSize: 14,
     color: Colors.primary,
+  },
+  errorText: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 14,
+    color: Colors.error,
+    marginBottom: 16,
+    textAlign: 'center',
   },
   signInButton: {
     marginBottom: 16,

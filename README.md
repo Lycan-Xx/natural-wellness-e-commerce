@@ -48,3 +48,100 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+
+
+
+
+
+
+
+-----------------------------------------------------
+
+
+
+
+```
+healthcare-mobile/
+├── app/
+│   ├── (auth)/                  # Authentication related screens
+│   │   ├── _layout.tsx          # Auth navigation layout
+│   │   ├── index.tsx            # Auth entry point
+│   │   ├── welcome.tsx          # Welcome screen
+│   │   ├── signin.tsx           # Sign in screen
+│   │   ├── signup.tsx           # Sign up screen
+│   │   ├── forgot-password.tsx  # Password recovery
+│   │   ├── otp-verification.tsx # OTP verification screen
+│   │   ├── new-password.tsx     # New password setup
+│   │   └── success.tsx          # Success screen after auth
+│   │
+│   ├── (tabs)/                  # Main app tabs
+│   │   ├── _layout.tsx          # Tab navigation layout
+│   │   ├── index.tsx            # Home tab
+│   │   ├── browse.tsx           # Browse products tab
+│   │   ├── cart.tsx             # Shopping cart tab
+│   │   └── profile/             # Profile tab and related screens
+│   │       ├── _layout.tsx      # Profile navigation layout
+│   │       ├── index.tsx        # Main profile screen
+│   │       ├── edit.tsx         # Edit profile
+│   │       ├── address.tsx      # Manage addresses
+│   │       ├── language.tsx     # Language settings
+│   │       └── payment.tsx      # Payment methods
+│   │
+│   ├── _layout.tsx              # Root navigation layout
+│   └── +not-found.tsx          # 404 error screen
+│
+├── components/                   # Reusable UI components
+│   ├── Button.tsx
+│   ├── Divider.tsx
+│   ├── GreenCartLogo.tsx
+│   ├── HeaderBar.tsx
+│   ├── Input.tsx
+│   └── ProductCard.tsx
+│
+├── constants/                    # App constants
+│   └── Colors.tsx               # Color definitions
+│
+├── context/                      # React Context providers
+│   └── CartContext.tsx          # Shopping cart state management
+│
+├── data/                        # Static data
+│   └── products.ts              # Product catalog
+│
+└── types/                       # TypeScript type definitions
+    └── product.ts               # Product-related types
+```
+
+### Key Aspects:
+
+1. **File-based Routing**:
+   - Uses Expo Router with file-based routing
+   - Directory names in parentheses (e.g., `(auth)`, `(tabs)`) create route groups
+   - _layout.tsx files define navigation layouts for different sections
+
+2. **Authentication Flow** `(auth)/`:
+   - Complete authentication flow with welcome, sign-in, sign-up
+   - Password recovery and OTP verification
+   - Success screen for completed authentication
+
+3. **Main App Navigation** `(tabs)/`:
+   - Tab-based navigation with home, browse, cart, and profile sections
+   - Profile section has its own nested navigation stack
+   - Each tab represents a major feature of the app
+
+4. **Component Organization**:
+   - Reusable components kept in components
+   - Context providers in context for state management
+   - Constants and types in their respective directories
+
+5. **Data Management**:
+   - Static data like product catalog in data
+   - Types defined in types
+   - Cart state managed through CartContext
+
+### Navigation Flow:
+
+1. App starts at root _layout.tsx
+2. Unauthenticated users are directed to `(auth)` group
+3. After authentication, users access the `(tabs)` group
+4. Profile section has modal screens for settings and preferences
