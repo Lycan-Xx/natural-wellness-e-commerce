@@ -11,10 +11,9 @@ import {
   Modal,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
 import {
   ShoppingBag,
-  Heart,
-  ShoppingCart,
   MapPin,
   CreditCard,
   Moon,
@@ -26,7 +25,6 @@ import {
   Headphones,
   ChevronRight,
   Edit2,
-  PlaneIcon,
   X
 } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
@@ -71,6 +69,7 @@ interface VendorProfileScreenProps {
 
 export default function VendorProfileScreen({ onClose }: VendorProfileScreenProps) {
   const router = useRouter();
+  const { signOut } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -87,6 +86,7 @@ export default function VendorProfileScreen({ onClose }: VendorProfileScreenProp
   };
 
   const handleLogout = () => {
+    signOut();
     setShowLogoutModal(false);
     router.replace('/(auth)/welcome');
   };
