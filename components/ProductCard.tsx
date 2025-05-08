@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { Star } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import { Product } from '@/types/product';
 
@@ -21,11 +20,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) => {
         <Text style={styles.name} numberOfLines={1}>
           {product.name}
         </Text>
-        <View style={styles.ratingContainer}>
-          <Star size={16} color={Colors.warning} fill={Colors.warning} />
-          <Text style={styles.rating}>{product.rating}</Text>
-          <Text style={styles.reviews}>({product.reviews})</Text>
-        </View>
         <Text style={styles.price}>${product.price.toFixed(2)}</Text>
       </View>
     </TouchableOpacity>

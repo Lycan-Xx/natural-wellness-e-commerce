@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -30,8 +30,11 @@ export default function BrowseScreen() {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
   const [addingToCart, setAddingToCart] = useState(false);
-  const buttonOpacity = new Animated.Value(1);
-  const checkmarkOpacity = new Animated.Value(0);
+
+  // Animation values: opacity, scale, checkmark opacity
+  const buttonOpacity = useRef(new Animated.Value(1)).current;
+  const buttonScale = useRef(new Animated.Value(1)).current;
+  const checkmarkOpacity = useRef(new Animated.Value(0)).current;
 
   const filteredProducts = products.filter((product) => {
     const matchesCategory = selectedCategory === 'all' || 
@@ -52,47 +55,59 @@ export default function BrowseScreen() {
     }
   };
 
+  // Enhanced success animation: scale bounce & fade transitions
   const playAddToCartAnimation = () => {
     setAddingToCart(true);
-    
-    // Fade out button text
-    Animated.timing(buttonOpacity, {
-      toValue: 0,
-      duration: 200,
-      useNativeDriver: true
-    }).start();
-    
-    // Fade in checkmark
-    Animated.timing(checkmarkOpacity, {
-      toValue: 1,
-      duration: 200,
-      useNativeDriver: true
-    }).start();
-    
-    // Reset animation after delay
-    setTimeout(() => {
+
+    Animated.sequence([
+      // Fade out text, scale up button, fade in check
+      Animated.parallel([
+        Animated.timing(buttonOpacity, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(checkmarkOpacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.spring(buttonScale, {
+          toValue: 1.1,
+          friction: 3,
+          useNativeDriver: true,
+        }),
+      ]),
+      // Bounce back to original size
+      Animated.spring(buttonScale, {
+        toValue: 1,
+        friction: 4,
+        useNativeDriver: true,
+      }),
+      // Hold for a moment
+      Animated.delay(1200),
+      // Reset to initial state
       Animated.parallel([
         Animated.timing(buttonOpacity, {
           toValue: 1,
           duration: 200,
-          useNativeDriver: true
+          useNativeDriver: true,
         }),
         Animated.timing(checkmarkOpacity, {
           toValue: 0,
           duration: 200,
-          useNativeDriver: true
-        })
-      ]).start(() => {
-        setAddingToCart(false);
-      });
-    }, 1500);
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start(() => {
+      setAddingToCart(false);
+    });
   };
 
   const handleAddToCart = () => {
     if (selectedProduct && !addingToCart) {
       addToCart(selectedProduct, quantity);
       playAddToCartAnimation();
-      // No redirect to cart page
     }
   };
 
@@ -207,20 +222,28 @@ export default function BrowseScreen() {
             </ScrollView>
             
             <View style={styles.footer}>
-              <TouchableOpacity
-                style={[styles.addToCartButton, addingToCart && styles.addToCartButtonSuccess]}
-                onPress={handleAddToCart}
-                disabled={addingToCart}
+              <Animated.View
+                style={[
+                  styles.addToCartButton,
+                  addingToCart && styles.addToCartButtonSuccess,
+                  { transform: [{ scale: buttonScale }] },
+                ]}
               >
+                <TouchableOpacity
+                  style={StyleSheet.absoluteFill}
+                  onPress={handleAddToCart}
+                  disabled={addingToCart}
+                />
                 <Animated.Text 
-                  style={[styles.addToCartButtonText, { opacity: buttonOpacity }]}>
+                  style={[styles.addToCartButtonText, { opacity: buttonOpacity }]}
+                >
                   Add to Cart
                 </Animated.Text>
                 <Animated.View 
                   style={[styles.checkmarkContainer, { opacity: checkmarkOpacity }]}>
                   <Check size={24} color={Colors.white} />
                 </Animated.View>
-              </TouchableOpacity>
+              </Animated.View>
             </View>
           </SafeAreaView>
         )}
@@ -230,170 +253,37 @@ export default function BrowseScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F1E9',
-  },
-  header: {
-    padding: 16,
-    backgroundColor: Colors.white,
-  },
-  searchInput: {
-    marginBottom: 0,
-  },
-  categoriesContainer: {
-    backgroundColor: Colors.white,
-    paddingBottom: 16,
-  },
-  categoriesList: {
-    paddingHorizontal: 16,
-  },
-  categoryButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: Colors.background,
-    marginRight: 8,
-  },
-  categoryButtonActive: {
-    backgroundColor: Colors.primary,
-  },
-  categoryButtonText: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 14,
-    color: Colors.text.secondary,
-  },
-  categoryButtonTextActive: {
-    color: Colors.white,
-  },
-  productGrid: {
-    padding: 16,
-  },
-  productRow: {
-    justifyContent: 'space-between',
-  },
-  productCardContainer: {
-    width: '48%',
-    marginBottom: 16,
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  modalContent: {
-    paddingBottom: 100,
-  },
-  modalImage: {
-    width: '100%',
-    height: 300,
-    resizeMode: 'cover',
-  },
-  detailsContainer: {
-    padding: 20,
-    backgroundColor: Colors.white,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    marginTop: -24,
-  },
-  name: {
-    fontFamily: 'Poppins-Bold',
-    fontSize: 24,
-    color: Colors.text.primary,
-    marginBottom: 8,
-  },
-  price: {
-    fontFamily: 'Poppins-Bold',
-    fontSize: 20,
-    color: Colors.primary,
-    marginBottom: 16,
-  },
-  description: {
-    fontFamily: 'Poppins-Regular',
-    fontSize: 14,
-    color: Colors.text.secondary,
-    lineHeight: 22,
-    marginBottom: 24,
-  },
-  quantityContainer: {
-    marginBottom: 24,
-  },
-  quantityLabel: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 16,
-    color: Colors.text.primary,
-    marginBottom: 12,
-  },
-  quantityControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  quantityButton: {
-    width: 40,
-    height: 40,
-    backgroundColor: Colors.background,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  quantityButtonText: {
-    fontFamily: 'Poppins-Bold',
-    fontSize: 20,
-    color: Colors.text.primary,
-  },
-  quantityText: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 16,
-    color: Colors.text.primary,
-    marginHorizontal: 20,
-  },
-  totalContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  totalLabel: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 16,
-    color: Colors.text.primary,
-  },
-  totalPrice: {
-    fontFamily: 'Poppins-Bold',
-    fontSize: 24,
-    color: Colors.primary,
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: Colors.white,
-    padding: 20,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-  },
-  addToCartButton: {
-    backgroundColor: Colors.primary,
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 0,
-    overflow: 'hidden',
-  },
-  addToCartButtonSuccess: {
-    backgroundColor: '#4CAF50', // Success green color
-  },
-  addToCartButtonText: {
-    color: Colors.white,
-    fontFamily: 'Poppins-Bold',
-    fontSize: 16,
-  },
-  checkmarkContainer: {
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  container: { flex: 1, backgroundColor: '#F5F1E9' },
+  header: { padding: 16, backgroundColor: Colors.white },
+  searchInput: { marginBottom: 0 },
+  categoriesContainer: { backgroundColor: Colors.white, paddingBottom: 16 },
+  categoriesList: { paddingHorizontal: 16 },
+  categoryButton: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: Colors.background, marginRight: 8 },
+  categoryButtonActive: { backgroundColor: Colors.primary },
+  categoryButtonText: { fontFamily: 'Poppins-Medium', fontSize: 14, color: Colors.text.secondary },
+  categoryButtonTextActive: { color: Colors.white },
+  productGrid: { padding: 16 },
+  productRow: { justifyContent: 'space-between' },
+  productCardContainer: { width: '48%', marginBottom: 16 },
+  modalContainer: { flex: 1, backgroundColor: Colors.background },
+  modalContent: { paddingBottom: 100 },
+  modalImage: { width: '100%', height: 300, resizeMode: 'cover' },
+  detailsContainer: { padding: 20, backgroundColor: Colors.white, borderTopLeftRadius: 24, borderTopRightRadius: 24, marginTop: -24 },
+  name: { fontFamily: 'Poppins-Bold', fontSize: 24, color: Colors.text.primary, marginBottom: 8 },
+  price: { fontFamily: 'Poppins-Bold', fontSize: 20, color: Colors.primary, marginBottom: 16 },
+  description: { fontFamily: 'Poppins-Regular', fontSize: 14, color: Colors.text.secondary, lineHeight: 22, marginBottom: 24 },
+  quantityContainer: { marginBottom: 24 },
+  quantityLabel: { fontFamily: 'Poppins-Medium', fontSize: 16, color: Colors.text.primary, marginBottom: 12 },
+  quantityControls: { flexDirection: 'row', alignItems: 'center' },
+  quantityButton: { width: 40, height: 40, backgroundColor: Colors.background, borderRadius: 8, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: Colors.border },
+  quantityButtonText: { fontFamily: 'Poppins-Bold', fontSize: 20, color: Colors.text.primary },
+  quantityText: { fontFamily: 'Poppins-Medium', fontSize: 16, color: Colors.text.primary, marginHorizontal: 20 },
+  totalContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
+  totalLabel: { fontFamily: 'Poppins-Medium', fontSize: 16, color: Colors.text.primary },
+  totalPrice: { fontFamily: 'Poppins-Bold', fontSize: 24, color: Colors.primary },
+  footer: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: Colors.white, padding: 20, borderTopWidth: 1, borderTopColor: Colors.border },
+  addToCartButton: { backgroundColor: Colors.primary, paddingVertical: 14, borderRadius: 12, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  addToCartButtonSuccess: { backgroundColor: '#4CAF50' },
+  addToCartButtonText: { color: Colors.white, fontFamily: 'Poppins-Bold', fontSize: 16 },
+  checkmarkContainer: { position: 'absolute', justifyContent: 'center', alignItems: 'center' },
 });
