@@ -9,7 +9,7 @@ import {
   Modal,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Package, ShoppingBag, CircleUser as UserCircle, DollarSign } from 'lucide-react-native';
+import { Package, ShoppingBag, CircleUser as UserCircle, DollarSign, ArrowDownLeft } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import { useAuth } from '@/context/AuthContext';
 import Button from '@/components/Button';
@@ -29,6 +29,7 @@ export default function VendorDashboard() {
   const [showProductsModal, setShowProductsModal] = useState(false);
   const [showOrdersModal, setShowOrdersModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
   const handleProfilePress = () => {
     setShowProfileModal(true);
@@ -56,6 +57,13 @@ export default function VendorDashboard() {
             <DollarSign size={32} color={Colors.primary} />
             <Text style={styles.balanceAmount}>2,458.50</Text>
           </View>
+          <TouchableOpacity
+            style={styles.withdrawButton}
+            onPress={() => setShowWithdrawModal(true)}
+          >
+            <ArrowDownLeft size={20} color={Colors.white} />
+            <Text style={styles.withdrawButtonText}>Withdraw</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.statsSection}>
@@ -150,6 +158,28 @@ export default function VendorDashboard() {
           <VendorProfileScreen onClose={() => setShowProfileModal(false)} />
         </SafeAreaView>
       </Modal>
+
+      {/* Withdraw Modal */}
+      <Modal
+        visible={showWithdrawModal}
+        animationType="slide"
+        onRequestClose={() => setShowWithdrawModal(false)}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <HeaderBar 
+            title="Withdraw Funds" 
+            showBackButton 
+            onBackPress={() => setShowWithdrawModal(false)} 
+          />
+          <View style={styles.modalContent}>
+            <View style={styles.balanceInfo}>
+              <Text style={styles.balanceInfoLabel}>Available Balance</Text>
+              <Text style={styles.balanceInfoAmount}>$2,458.50</Text>
+            </View>
+            {/* Add your withdrawal form here */}
+          </View>
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -215,6 +245,22 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Bold',
     fontSize: 32,
     color: Colors.text.primary,
+    marginLeft: 8,
+  },
+  withdrawButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.primary,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginTop: 16,
+  },
+  withdrawButtonText: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 16,
+    color: Colors.white,
     marginLeft: 8,
   },
   statsSection: {
@@ -361,5 +407,23 @@ const styles = StyleSheet.create({
   },
   editButton: {
     width: '100%',
+  },
+  balanceInfo: {
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: Colors.white,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+  balanceInfoLabel: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 14,
+    color: Colors.text.secondary,
+  },
+  balanceInfoAmount: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 32,
+    color: Colors.text.primary,
+    marginTop: 8,
   },
 });
