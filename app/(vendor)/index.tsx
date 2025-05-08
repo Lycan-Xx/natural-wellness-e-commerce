@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,64 +6,182 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ScrollView,
+  Modal,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Package, ShoppingBag, LogOut } from 'lucide-react-native';
+import { Package, ShoppingBag, CircleUser as UserCircle, DollarSign } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import { useAuth } from '@/context/AuthContext';
+import Button from '@/components/Button';
+import HeaderBar from '@/components/HeaderBar';
+
+// Mock transaction data
+const transactions = [
+  { id: '1', title: 'Echinacea Plant', date: 'Today', amount: -10.00, type: 'sale' },
+  { id: '2', title: 'Order', date: 'Yesterday', amount: -12.00, type: 'sale' },
+  { id: '3', title: 'Deposit', date: 'May 10', amount: 20.00, type: 'deposit' },
+];
 
 export default function VendorDashboard() {
   const router = useRouter();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
+  const [showProductsModal, setShowProductsModal] = useState(false);
+  const [showOrdersModal, setShowOrdersModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
-  const handleSignOut = () => {
-    signOut();
-    router.replace('/(auth)/signin');
+  const handleProfilePress = () => {
+    setShowProfileModal(true);
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <View>
+      <HeaderBar 
+        title="Dashboard"
+        rightComponent={
+          <TouchableOpacity onPress={handleProfilePress}>
+            <UserCircle size={24} color={Colors.text.secondary} />
+          </TouchableOpacity>
+        }
+      />
+
+      <ScrollView style={styles.content}>
+        <View style={styles.welcomeSection}>
           <Text style={styles.welcomeText}>Welcome back,</Text>
           <Text style={styles.nameText}>{user?.fullName}</Text>
         </View>
-        <TouchableOpacity onPress={handleSignOut} style={styles.logoutButton}>
-          <LogOut size={24} color={Colors.text.secondary} />
-        </TouchableOpacity>
-      </View>
 
-      <ScrollView style={styles.content}>
-        <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>24</Text>
-            <Text style={styles.statLabel}>Products</Text>
+        <View style={styles.balanceCard}>
+          <Text style={styles.balanceLabel}>Current Balance</Text>
+          <View style={styles.balanceRow}>
+            <DollarSign size={32} color={Colors.primary} />
+            <Text style={styles.balanceAmount}>2,458.50</Text>
           </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>12</Text>
-            <Text style={styles.statLabel}>Orders</Text>
+        </View>
+
+        <View style={styles.statsSection}>
+          <View style={styles.statsColumn}>
+            <Text style={styles.statsLabel}>Products</Text>
+            <View style={styles.statCard}>
+              <Text style={styles.statNumber}>24</Text>
+            </View>
+          </View>
+
+          <View style={styles.statsColumn}>
+            <Text style={styles.statsLabel}>Orders</Text>
+            <View style={styles.statCard}>
+              <Text style={styles.statNumber}>12</Text>
+            </View>
           </View>
         </View>
 
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <View style={styles.actionsContainer}>
           <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => router.push('/products')}
+            style={[styles.actionCard, styles.activeActionCard]}
+            onPress={() => setShowProductsModal(true)}
           >
-            <Package size={24} color={Colors.primary} />
-            <Text style={styles.actionText}>Manage Products</Text>
+            <Package size={24} color={Colors.white} />
+            <Text style={[styles.actionText, styles.activeActionText]}>Manage Products</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => router.push('/orders')}
+            style={[styles.actionCard, styles.activeActionCard]}
+            onPress={() => setShowOrdersModal(true)}
           >
-            <ShoppingBag size={24} color={Colors.primary} />
-            <Text style={styles.actionText}>View Orders</Text>
+            <ShoppingBag size={24} color={Colors.white} />
+            <Text style={[styles.actionText, styles.activeActionText]}>View Orders</Text>
           </TouchableOpacity>
         </View>
+
+        <Text style={styles.sectionTitle}>Transaction History</Text>
+        <View style={styles.transactionsContainer}>
+          {transactions.map((transaction) => (
+            <View key={transaction.id} style={styles.transactionItem}>
+              <View style={styles.transactionInfo}>
+                <Text style={styles.transactionTitle}>{transaction.title}</Text>
+                <Text style={styles.transactionDate}>{transaction.date}</Text>
+              </View>
+              <Text
+                style={[
+                  styles.transactionAmount,
+                  transaction.amount > 0 ? styles.positiveAmount : styles.negativeAmount,
+                ]}
+              >
+                {transaction.amount > 0 ? '+' : ''}{transaction.amount.toFixed(2)}
+              </Text>
+            </View>
+          ))}
+        </View>
       </ScrollView>
+
+      {/* Products Modal */}
+      <Modal
+        visible={showProductsModal}
+        animationType="slide"
+        onRequestClose={() => setShowProductsModal(false)}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <HeaderBar
+            title="Manage Products"
+            showBackButton={true}
+            onBackPress={() => setShowProductsModal(false)}
+          />
+          <View style={styles.modalContent}>
+            <Text>Products management content goes here</Text>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+      {/* Orders Modal */}
+      <Modal
+        visible={showOrdersModal}
+        animationType="slide"
+        onRequestClose={() => setShowOrdersModal(false)}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <HeaderBar
+            title="Orders"
+            showBackButton={true}
+            onBackPress={() => setShowOrdersModal(false)}
+          />
+          <View style={styles.modalContent}>
+            <Text>Orders management content goes here</Text>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+      {/* Profile Modal */}
+      <Modal
+        visible={showProfileModal}
+        animationType="slide"
+        onRequestClose={() => setShowProfileModal(false)}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <HeaderBar
+            title="Profile"
+            showBackButton={true}
+            onBackPress={() => setShowProfileModal(false)}
+          />
+          <ScrollView style={styles.modalContent}>
+            {/* Reuse the profile content from the profile components */}
+            <View style={styles.profileSection}>
+              <View style={styles.profileHeader}>
+                <UserCircle size={80} color={Colors.primary} />
+                <Text style={styles.profileName}>{user?.fullName}</Text>
+                <Text style={styles.profileEmail}>{user?.email}</Text>
+              </View>
+              <Button
+                title="Edit Profile"
+                onPress={() => {
+                  setShowProfileModal(false);
+                  router.push('/(vendor)/profile/edit');
+                }}
+                style={styles.editButton}
+              />
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -73,12 +191,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  content: {
+    flex: 1,
     padding: 20,
-    backgroundColor: Colors.white,
+  },
+  welcomeSection: {
+    marginBottom: 24,
   },
   welcomeText: {
     fontFamily: 'Poppins-Regular',
@@ -90,36 +208,69 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: Colors.text.primary,
   },
-  logoutButton: {
-    padding: 8,
-  },
-  content: {
-    flex: 1,
+  balanceCard: {
+    backgroundColor: Colors.white,
+    borderRadius: 12,
     padding: 20,
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  statsContainer: {
+  balanceLabel: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 14,
+    color: Colors.text.secondary,
+    marginBottom: 8,
+  },
+  balanceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  balanceAmount: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 32,
+    color: Colors.text.primary,
+    marginLeft: 8,
+  },
+  statsSection: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 24,
   },
-  statCard: {
+  statsColumn: {
     flex: 1,
+    marginHorizontal: 8,
+  },
+  statsLabel: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 14,
+    color: Colors.text.secondary,
+    marginBottom: 8,
+  },
+  statCard: {
     backgroundColor: Colors.white,
     borderRadius: 12,
     padding: 16,
-    marginHorizontal: 8,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   statNumber: {
     fontFamily: 'Poppins-Bold',
     fontSize: 24,
-    color: Colors.primary,
-  },
-  statLabel: {
-    fontFamily: 'Poppins-Regular',
-    fontSize: 14,
-    color: Colors.text.secondary,
-    marginTop: 4,
+    color: Colors.text.primary,
   },
   sectionTitle: {
     fontFamily: 'Poppins-Medium',
@@ -129,18 +280,27 @@ const styles = StyleSheet.create({
   },
   actionsContainer: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginHorizontal: -8,
+    justifyContent: 'space-between',
+    marginBottom: 24,
   },
   actionCard: {
-    width: '50%',
-    padding: 8,
-  },
-  actionInner: {
+    flex: 1,
     backgroundColor: Colors.white,
     borderRadius: 12,
     padding: 16,
+    marginHorizontal: 8,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  activeActionCard: {
+    backgroundColor: Colors.success,
   },
   actionText: {
     fontFamily: 'Poppins-Medium',
@@ -148,5 +308,79 @@ const styles = StyleSheet.create({
     color: Colors.text.primary,
     marginTop: 8,
     textAlign: 'center',
+  },
+  activeActionText: {
+    color: Colors.white,
+  },
+  transactionsContainer: {
+    backgroundColor: Colors.white,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+  },
+  transactionItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  transactionInfo: {
+    flex: 1,
+  },
+  transactionTitle: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 14,
+    color: Colors.text.primary,
+  },
+  transactionDate: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 12,
+    color: Colors.text.secondary,
+    marginTop: 2,
+  },
+  transactionAmount: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 16,
+  },
+  positiveAmount: {
+    color: Colors.success,
+  },
+  negativeAmount: {
+    color: Colors.error,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+  modalContent: {
+    flex: 1,
+    padding: 20,
+  },
+  profileSection: {
+    backgroundColor: Colors.white,
+    borderRadius: 12,
+    padding: 20,
+    alignItems: 'center',
+  },
+  profileHeader: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  profileName: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 20,
+    color: Colors.text.primary,
+    marginTop: 12,
+  },
+  profileEmail: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 14,
+    color: Colors.text.secondary,
+    marginTop: 4,
+  },
+  editButton: {
+    width: '100%',
   },
 });
