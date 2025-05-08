@@ -26,10 +26,15 @@ import {
   Headphones,
   ChevronRight,
   Edit2,
-  PlaneIcon
+  PlaneIcon,
+  X
 } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import Button from '@/components/Button';
+import EditProfileScreen from './edit';
+import AddressScreen from './address';
+import LanguageScreen from './language';
+import PaymentMethodsScreen from './payment';
 
 interface SettingsSectionProps {
   title: string;
@@ -60,13 +65,21 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({ title, items }) => (
   </View>
 );
 
-export default function ProfileScreen() {
+interface VendorProfileScreenProps {
+  onClose?: () => void;
+}
+
+export default function VendorProfileScreen({ onClose }: VendorProfileScreenProps) {
   const router = useRouter();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const handleEditProfile = () => {
-    router.push('/profile/edit');
+    setShowEditModal(true);
   };
 
   const handleLogoutPress = () => {
@@ -84,6 +97,11 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.headerWithClose}>
+        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+          <X size={24} color={Colors.text.secondary} />
+        </TouchableOpacity>
+      </View>
       <ScrollView style={styles.scrollView}>
         <View style={styles.header}>
           <View style={styles.profileInfo}>
@@ -109,21 +127,6 @@ export default function ProfileScreen() {
               title: "My Orders",
               onPress: () => {},
             },
-            {
-              icon: <Heart size={20} color={Colors.text.secondary} />,
-              title: "Wishlist",
-              onPress: () => {},
-            },
-            {
-              icon: <PlaneIcon size={20} color={Colors.text.secondary} />,
-              title: "Tracking",
-              onPress: () => {},
-            },
-            {
-              icon: <ShoppingCart size={20} color={Colors.text.secondary} />,
-              title: "Cart",
-              onPress: () => router.push('/cart'),
-            },
           ]}
         />
 
@@ -133,12 +136,12 @@ export default function ProfileScreen() {
             {
               icon: <MapPin size={20} color={Colors.text.secondary} />,
               title: "Address",
-              onPress: () => router.push('/profile/address'),
+              onPress: () => setShowAddressModal(true),
             },
             {
               icon: <CreditCard size={20} color={Colors.text.secondary} />,
               title: "Payment Methods",
-              onPress: () => router.push('/profile/payment'),
+              onPress: () => setShowPaymentModal(true),
             },
             {
               icon: <Moon size={20} color={Colors.text.secondary} />,
@@ -167,7 +170,7 @@ export default function ProfileScreen() {
             {
               icon: <Globe size={20} color={Colors.text.secondary} />,
               title: "Language",
-              onPress: () => router.push('/profile/language'),
+              onPress: () => setShowLanguageModal(true),
             },
             {
               icon: <Bell size={20} color={Colors.text.secondary} />,
@@ -197,34 +200,78 @@ export default function ProfileScreen() {
             },
           ]}
         />
-      </ScrollView>
 
-      <Modal
-        visible={showLogoutModal}
-        transparent
-        animationType="fade"
-        onRequestClose={handleCancelLogout}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Log Out</Text>
-            <Text style={styles.modalText}>Are you sure you want to log out?</Text>
-            <View style={styles.modalButtons}>
-              <Button
-                title="Cancel"
-                onPress={handleCancelLogout}
-                variant="outline"
-                style={styles.modalButton}
-              />
-              <Button
-                title="Log Out"
-                onPress={handleLogout}
-                style={[styles.modalButton, styles.logoutButton]}
-              />
+        {/* Edit Profile Modal */}
+        <Modal
+          visible={showEditModal}
+          animationType="slide"
+          onRequestClose={() => setShowEditModal(false)}
+        >
+          <SafeAreaView style={styles.modalContainer}>
+            <EditProfileScreen onClose={() => setShowEditModal(false)} />
+          </SafeAreaView>
+        </Modal>
+
+        {/* Address Modal */}
+        <Modal
+          visible={showAddressModal}
+          animationType="slide"
+          onRequestClose={() => setShowAddressModal(false)}
+        >
+          <SafeAreaView style={styles.modalContainer}>
+            <AddressScreen onClose={() => setShowAddressModal(false)} />
+          </SafeAreaView>
+        </Modal>
+
+        {/* Language Modal */}
+        <Modal
+          visible={showLanguageModal}
+          animationType="slide"
+          onRequestClose={() => setShowLanguageModal(false)}
+        >
+          <SafeAreaView style={styles.modalContainer}>
+            <LanguageScreen onClose={() => setShowLanguageModal(false)} />
+          </SafeAreaView>
+        </Modal>
+
+        {/* Payment Modal */}
+        <Modal
+          visible={showPaymentModal}
+          animationType="slide"
+          onRequestClose={() => setShowPaymentModal(false)}
+        >
+          <SafeAreaView style={styles.modalContainer}>
+            <PaymentMethodsScreen onClose={() => setShowPaymentModal(false)} />
+          </SafeAreaView>
+        </Modal>
+
+        <Modal
+          visible={showLogoutModal}
+          transparent
+          animationType="fade"
+          onRequestClose={handleCancelLogout}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Log Out</Text>
+              <Text style={styles.modalText}>Are you sure you want to log out?</Text>
+              <View style={styles.modalButtons}>
+                <Button
+                  title="Cancel"
+                  onPress={handleCancelLogout}
+                  variant="outline"
+                  style={styles.modalButton}
+                />
+                <Button
+                  title="Log Out"
+                  onPress={handleLogout}
+                  style={[styles.modalButton, styles.logoutButton]}
+                />
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -243,6 +290,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 20,
     backgroundColor: Colors.white,
+  },
+  headerWithClose: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  closeButton: {
+    padding: 8,
   },
   profileInfo: {
     flexDirection: 'row',
@@ -333,5 +389,9 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     backgroundColor: Colors.error,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: Colors.background,
   },
 });

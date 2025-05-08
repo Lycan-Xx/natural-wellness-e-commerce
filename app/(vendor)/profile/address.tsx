@@ -28,8 +28,11 @@ const localities = {
   England: ['Local 1', 'Local 2', 'Local 3'],
 };
 
-export default function AddressScreen() {
-  const router = useRouter();
+interface AddressScreenProps {
+  onClose?: () => void;
+}
+
+export default function AddressScreen({ onClose }: AddressScreenProps) {
   const [formData, setFormData] = useState({
     country: 'ng',
     state: '',
@@ -39,12 +42,16 @@ export default function AddressScreen() {
 
   const handleSave = () => {
     console.log('Address saved:', formData);
-    router.back();
+    onClose?.();
   };
 
   return (
     <View style={styles.container}>
-      <HeaderBar title="Address" />
+      <HeaderBar 
+        title="Address" 
+        showBackButton={true}
+        onBackPress={onClose}
+      />
       
       <ScrollView style={styles.content}>
         <Text style={styles.label}>Country</Text>

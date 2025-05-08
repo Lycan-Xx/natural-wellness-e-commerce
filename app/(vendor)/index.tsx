@@ -14,6 +14,7 @@ import Colors from '@/constants/Colors';
 import { useAuth } from '@/context/AuthContext';
 import Button from '@/components/Button';
 import HeaderBar from '@/components/HeaderBar';
+import VendorProfileScreen from './profile';
 
 // Mock transaction data
 const transactions = [
@@ -35,15 +36,14 @@ export default function VendorDashboard() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderBar 
-        title="Dashboard"
-        rightComponent={
+      <View style={styles.header}>
+        <View style={styles.headerContent}>
+          <View style={{ flex: 1 }} />
           <TouchableOpacity onPress={handleProfilePress}>
             <UserCircle size={24} color={Colors.text.secondary} />
           </TouchableOpacity>
-        }
-      />
-
+        </View>
+      </View>
       <ScrollView style={styles.content}>
         <View style={styles.welcomeSection}>
           <Text style={styles.welcomeText}>Welcome back,</Text>
@@ -121,11 +121,6 @@ export default function VendorDashboard() {
         onRequestClose={() => setShowProductsModal(false)}
       >
         <SafeAreaView style={styles.modalContainer}>
-          <HeaderBar
-            title="Manage Products"
-            showBackButton={true}
-            onBackPress={() => setShowProductsModal(false)}
-          />
           <View style={styles.modalContent}>
             <Text>Products management content goes here</Text>
           </View>
@@ -139,11 +134,6 @@ export default function VendorDashboard() {
         onRequestClose={() => setShowOrdersModal(false)}
       >
         <SafeAreaView style={styles.modalContainer}>
-          <HeaderBar
-            title="Orders"
-            showBackButton={true}
-            onBackPress={() => setShowOrdersModal(false)}
-          />
           <View style={styles.modalContent}>
             <Text>Orders management content goes here</Text>
           </View>
@@ -157,29 +147,7 @@ export default function VendorDashboard() {
         onRequestClose={() => setShowProfileModal(false)}
       >
         <SafeAreaView style={styles.modalContainer}>
-          <HeaderBar
-            title="Profile"
-            showBackButton={true}
-            onBackPress={() => setShowProfileModal(false)}
-          />
-          <ScrollView style={styles.modalContent}>
-            {/* Reuse the profile content from the profile components */}
-            <View style={styles.profileSection}>
-              <View style={styles.profileHeader}>
-                <UserCircle size={80} color={Colors.primary} />
-                <Text style={styles.profileName}>{user?.fullName}</Text>
-                <Text style={styles.profileEmail}>{user?.email}</Text>
-              </View>
-              <Button
-                title="Edit Profile"
-                onPress={() => {
-                  setShowProfileModal(false);
-                  router.push('/(vendor)/profile/edit');
-                }}
-                style={styles.editButton}
-              />
-            </View>
-          </ScrollView>
+          <VendorProfileScreen onClose={() => setShowProfileModal(false)} />
         </SafeAreaView>
       </Modal>
     </SafeAreaView>
@@ -194,6 +162,17 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 20,
+  },
+  header: {
+    backgroundColor: Colors.white,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   welcomeSection: {
     marginBottom: 24,

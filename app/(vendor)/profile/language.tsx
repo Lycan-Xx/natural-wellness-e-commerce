@@ -18,12 +18,20 @@ const languages = [
   { id: 'zh', name: 'Chinese', flag: 'https://flagcdn.com/w40/cn.png' },
 ];
 
-export default function LanguageScreen() {
+interface LanguageScreenProps {
+  onClose?: () => void;
+}
+
+export default function LanguageScreen({ onClose }: LanguageScreenProps) {
   const [selectedLanguage, setSelectedLanguage] = useState('en-us');
 
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderBar title="Language" />
+      <HeaderBar 
+        title="Language" 
+        showBackButton={true}
+        onBackPress={onClose}
+      />
       
       <View style={styles.content}>
         {languages.map((language) => (

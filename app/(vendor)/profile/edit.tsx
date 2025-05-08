@@ -15,7 +15,11 @@ import HeaderBar from '@/components/HeaderBar';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 
-export default function EditProfileScreen() {
+interface EditProfileScreenProps {
+  onClose?: () => void;
+}
+
+export default function EditProfileScreen({ onClose }: EditProfileScreenProps) {
   const [formData, setFormData] = useState({
     fullName: 'Mukhlisin',
     email: 'Mukhlisin@gmail.com',
@@ -28,12 +32,16 @@ export default function EditProfileScreen() {
   const handleSubmit = () => {
     // Handle form submission
     console.log('Form submitted:', formData);
-    router.back();
+    onClose?.();
   };
 
   return (
     <View style={styles.container}>
-      <HeaderBar title="Edit Profile" />
+      <HeaderBar 
+        title="Edit Profile" 
+        showBackButton={true}
+        onBackPress={onClose}
+      />
       
       <ScrollView style={styles.content}>
         <View style={styles.imageContainer}>

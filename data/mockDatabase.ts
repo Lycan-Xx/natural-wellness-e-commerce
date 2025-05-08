@@ -2,8 +2,8 @@ import { User } from '@/types/user';
 
 // Pre-populated test users
 export const mockUsers: User[] = [
-  { id: '1', email: 'customer@example.com', password: 'Pass123!', role: 'customer', fullName: 'John Customer' },
-  { id: '2', email: 'vendor@example.com', password: 'Pass123!', role: 'vendor', fullName: 'Jane Vendor' }
+  { id: '1', email: 'customer@example.com', password: 'Pass123!', role: 'customer', fullName: 'Mark Jonathan' },
+  { id: '2', email: 'vendor@example.com', password: 'Pass123!', role: 'vendor', fullName: 'Rashida Musa' }
 ];
 
 // Helper functions for mock database operations

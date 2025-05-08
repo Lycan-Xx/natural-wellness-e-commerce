@@ -8,7 +8,7 @@ const Colors = {
     tertiary: '#999999',
   },
   border: '#E0E0E0',
-  success: '#27AE60',
+  success: '#01421D',
   warning: '#F39C12',
   error: '#E74C3C',
   transparent: 'transparent',
