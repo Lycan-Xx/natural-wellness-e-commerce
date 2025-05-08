@@ -26,7 +26,7 @@ import {
   HelpCircle,
   Headphones,
   ChevronRight,
-  Edit2,
+  UserRoundPen,
   PlaneIcon
 } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
@@ -100,7 +100,7 @@ export default function ProfileScreen() {
             </View>
           </View>
           <TouchableOpacity onPress={handleEditProfile}>
-            <Edit2 size={24} color={Colors.primary} />
+            <UserRoundPen size={24} color={Colors.primary} />
           </TouchableOpacity>
         </View>
 

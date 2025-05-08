@@ -24,8 +24,8 @@ import {
   HelpCircle,
   Headphones,
   ChevronRight,
-  Edit2,
-  X
+  X,
+  UserRoundPen
 } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import Button from '@/components/Button';
@@ -115,7 +115,7 @@ export default function VendorProfileScreen({ onClose }: VendorProfileScreenProp
             </View>
           </View>
           <TouchableOpacity onPress={handleEditProfile}>
-            <Edit2 size={24} color={Colors.primary} />
+            <UserRoundPen size={24} color={Colors.primary} />
           </TouchableOpacity>
         </View>
 
@@ -135,12 +135,12 @@ export default function VendorProfileScreen({ onClose }: VendorProfileScreenProp
           items={[
             {
               icon: <MapPin size={20} color={Colors.text.secondary} />,
-              title: "Address",
+              title: "Vendor Address",
               onPress: () => setShowAddressModal(true),
             },
             {
               icon: <CreditCard size={20} color={Colors.text.secondary} />,
-              title: "Payment Methods",
+              title: "Withdrawal options",
               onPress: () => setShowPaymentModal(true),
             },
             {

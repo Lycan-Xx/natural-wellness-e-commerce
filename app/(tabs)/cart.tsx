@@ -75,6 +75,7 @@ export default function CartScreen() {
         />
 
         <ScrollView style={styles.modalContent}>
+          
           {/* Address Section */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Address</Text>
