@@ -69,7 +69,7 @@ interface VendorProfileScreenProps {
 
 export default function VendorProfileScreen({ onClose }: VendorProfileScreenProps) {
   const router = useRouter();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -110,8 +110,8 @@ export default function VendorProfileScreen({ onClose }: VendorProfileScreenProp
               style={styles.profileImage}
             />
             <View style={styles.profileText}>
-              <Text style={styles.username}>Mukhlisin</Text>
-              <Text style={styles.phoneNumber}>0855-3234-2345</Text>
+              <Text style={styles.username}>{user?.fullName}</Text>
+              <Text style={styles.email}>{user?.email}</Text>
             </View>
           </View>
           <TouchableOpacity onPress={handleEditProfile}>
@@ -208,7 +208,10 @@ export default function VendorProfileScreen({ onClose }: VendorProfileScreenProp
           onRequestClose={() => setShowEditModal(false)}
         >
           <SafeAreaView style={styles.modalContainer}>
-            <EditProfileScreen onClose={() => setShowEditModal(false)} />
+            <EditProfileScreen 
+              onClose={() => setShowEditModal(false)} 
+              userData={user}
+            />
           </SafeAreaView>
         </Modal>
 
@@ -317,7 +320,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: Colors.text.primary,
   },
-  phoneNumber: {
+  email: {
     fontFamily: 'Poppins-Regular',
     fontSize: 14,
     color: Colors.text.secondary,

@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   activeActionCard: {
-    backgroundColor: Colors.success,
+    backgroundColor: Colors.primary,
   },
   actionText: {
     fontFamily: 'Poppins-Medium',

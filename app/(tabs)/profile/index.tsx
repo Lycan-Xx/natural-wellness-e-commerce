@@ -11,6 +11,7 @@ import {
   Modal,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
 import {
   ShoppingBag,
   Heart,
@@ -62,6 +63,7 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({ title, items }) => (
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { user, signOut } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
@@ -74,6 +76,7 @@ export default function ProfileScreen() {
   };
 
   const handleLogout = () => {
+    signOut();
     setShowLogoutModal(false);
     router.replace('/(auth)/welcome');
   };
@@ -92,8 +95,8 @@ export default function ProfileScreen() {
               style={styles.profileImage}
             />
             <View style={styles.profileText}>
-              <Text style={styles.username}>Mukhlisin</Text>
-              <Text style={styles.phoneNumber}>0855-3234-2345</Text>
+              <Text style={styles.username}>{user?.fullName}</Text>
+              <Text style={styles.email}>{user?.email}</Text>
             </View>
           </View>
           <TouchableOpacity onPress={handleEditProfile}>

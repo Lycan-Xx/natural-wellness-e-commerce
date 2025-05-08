@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,29 +6,91 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Modal,
+  Alert,
 } from 'react-native';
 import { Camera } from 'lucide-react-native';
+import * as ImagePicker from 'expo-image-picker';
 import Colors from '@/constants/Colors';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
 import HeaderBar from '@/components/HeaderBar';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
 
 export default function EditProfileScreen() {
+  const router = useRouter();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
-    fullName: 'Mukhlisin',
-    email: 'Mukhlisin@gmail.com',
-    phone: '0855-3234-2345',
+    fullName: '',
+    email: '',
+    phone: '',
     gender: 'male',
   });
+  const [modalVisible, setModalVisible] = useState(false);
+  const [profileImage, setProfileImage] = useState('https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg');
 
-  const router = useRouter();
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.phone || prev.phone,
+        gender: user.gender || prev.gender,
+      }));
+    }
+  }, [user]);
+
+  const requestPermission = async (permissionType: 'camera' | 'mediaLibrary') => {
+    if (permissionType === 'camera') {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission needed', 'Camera permission is required to take photos');
+        return false;
+      }
+    } else {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission needed', 'Gallery permission is required to select photos');
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const pickImage = async (type: 'camera' | 'gallery') => {
+    setModalVisible(false);
+    
+    if (!(await requestPermission(type === 'camera' ? 'camera' : 'mediaLibrary'))) {
+      return;
+    }
+
+    const options: ImagePicker.ImagePickerOptions = {
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    };
+
+    try {
+      const result = type === 'camera'
+        ? await ImagePicker.launchCameraAsync(options)
+        : await ImagePicker.launchImageLibraryAsync(options);
+
+      if (!result.canceled && result.assets[0].uri) {
+        setProfileImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to pick image');
+    }
+  };
 
   const handleSubmit = () => {
-    // Handle form submission
-    console.log('Form submitted:', formData);
-    router.back();
+    Alert.alert('Success', 'Profile updated successfully', [
+      { text: 'OK', onPress: () => router.back() }
+    ]);
   };
 
   return (
@@ -38,13 +100,47 @@ export default function EditProfileScreen() {
       <ScrollView style={styles.content}>
         <View style={styles.imageContainer}>
           <Image
-            source={{ uri: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg' }}
+            source={{ uri: profileImage }}
             style={styles.profileImage}
           />
-          <TouchableOpacity style={styles.editImageButton}>
+          <TouchableOpacity 
+            style={styles.editImageButton}
+            onPress={() => setModalVisible(true)}
+          >
             <Camera size={20} color={Colors.white} />
           </TouchableOpacity>
         </View>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Choose Image Source</Text>
+              <TouchableOpacity
+                style={styles.modalOption}
+                onPress={() => pickImage('gallery')}
+              >
+                <Text style={styles.modalOptionText}>Choose from Gallery</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalOption}
+                onPress={() => pickImage('camera')}
+              >
+                <Text style={styles.modalOptionText}>Take Photo</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalOption, styles.cancelButton]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={[styles.modalOptionText, styles.cancelButtonText]}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
 
         <Input
           label="Full Name"
@@ -129,5 +225,42 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     marginTop: 24,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: Colors.white,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontFamily: 'Poppins-Medium',
+    color: Colors.text.primary,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  modalOption: {
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  modalOptionText: {
+    fontSize: 16,
+    fontFamily: 'Poppins-Regular',
+    color: Colors.text.primary,
+    textAlign: 'center',
+  },
+  cancelButton: {
+    marginTop: 10,
+    borderBottomWidth: 0,
+  },
+  cancelButtonText: {
+    color: Colors.primary,
+    fontFamily: 'Poppins-Medium',
   },
 });

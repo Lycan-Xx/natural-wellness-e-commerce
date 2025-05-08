@@ -221,12 +221,6 @@ export default function BrowseScreen() {
                   <Check size={24} color={Colors.white} />
                 </Animated.View>
               </TouchableOpacity>
-              <Button
-                title="Checkout"
-                onPress={() => router.push('/cart')}
-                variant="outline"
-                style={styles.checkoutButton}
-              />
             </View>
           </SafeAreaView>
         )}
@@ -386,7 +380,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
+    marginBottom: 0,
     overflow: 'hidden',
   },
   addToCartButtonSuccess: {
@@ -401,8 +395,5 @@ const styles = StyleSheet.create({
     position: 'absolute',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  checkoutButton: {
-    marginBottom: 0,
   },
 });
