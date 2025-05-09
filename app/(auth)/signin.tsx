@@ -6,10 +6,11 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ScrollView,
+  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Formik } from 'formik';
-import { Mail, AtSign, Facebook } from 'lucide-react-native';
+import { AtSign } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
@@ -20,6 +21,10 @@ import Divider from '@/components/Divider';
 import SocialButton from '@/components/SocialButton';
 import { SignInSchema } from '@/utils/validation';
 import { useAuth } from '@/context/AuthContext';
+
+// Import the provided images
+const googleLogo = require('@/assets/google.png'); // Place your Google image in assets as google.png
+const facebookLogo = require('@/assets/facebook.png'); // Place your Facebook image in assets as facebook.png
 
 export default function SignInScreen() {
   const router = useRouter();
@@ -138,12 +143,24 @@ export default function SignInScreen() {
               
               <View style={styles.socialButtonsContainer}>
                 <SocialButton
-                  icon={<Mail size={24} color={Colors.text.primary} />}
+                  icon={
+                    <Image
+                      source={googleLogo}
+                      style={{ width: 24, height: 24 }}
+                      resizeMode="contain"
+                    />
+                  }
                   onPress={handleGoogleSignIn}
                   accessibilityLabel="Sign in with Google"
                 />
                 <SocialButton
-                  icon={<Facebook size={24} color="#1877F2" />}
+                  icon={
+                    <Image
+                      source={facebookLogo}
+                      style={{ width: 24, height: 24 }}
+                      resizeMode="contain"
+                    />
+                  }
                   onPress={handleFacebookSignIn}
                   accessibilityLabel="Sign in with Facebook"
                 />

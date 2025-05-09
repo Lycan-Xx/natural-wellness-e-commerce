@@ -84,11 +84,14 @@ export default function AddressScreen() {
     setIsEditing(true);
     setEditingAddress(address);
     setShowAddressForm(true);
+
+    // Try to parse address string to fill form fields, fallback to empty string
+    const parts = address.address.split(',').map(s => s.trim());
     setFormData({
-      country: 'ng',
-      state: '',
-      locality: '',
-      address: address.address,
+      country: countries.find(c => parts[3] && c.name === parts[3])?.id || 'ng',
+      state: parts[2] || '',
+      locality: parts[1] || '',
+      address: parts[0] || '',
     });
   };
 
@@ -170,9 +173,9 @@ export default function AddressScreen() {
             <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={formData.state}
-                onValueChange={(value) => setFormData({ ...formData, state: value })}
+                onValueChange={(value) => setFormData({ ...formData, state: value, locality: '' })}
               >
-                {states[formData.country as keyof typeof states].map((state) => (
+                {(states[formData.country] || []).map((state) => (
                   <Picker.Item key={state} label={state} value={state} />
                 ))}
               </Picker>
@@ -184,7 +187,7 @@ export default function AddressScreen() {
                 selectedValue={formData.locality}
                 onValueChange={(value) => setFormData({ ...formData, locality: value })}
               >
-                {formData.state && localities[formData.state as keyof typeof localities]?.map((local) => (
+                {(formData.state && localities[formData.state] ? localities[formData.state] : []).map((local) => (
                   <Picker.Item key={local} label={local} value={local} />
                 ))}
               </Picker>

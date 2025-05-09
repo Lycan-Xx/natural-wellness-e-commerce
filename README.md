@@ -49,22 +49,12 @@ Join our community of developers creating universal apps.
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
 
-
-
-
-
-
-
-
 -----------------------------------------------------
-
-
-
 
 ```
 healthcare-mobile/
 ├── app/
-│   ├── (auth)/                  # Authentication related screens
+│   ├── (auth)/                  # Authentication screens (sign in, sign up, etc.)
 │   │   ├── _layout.tsx          # Auth navigation layout
 │   │   ├── index.tsx            # Auth entry point
 │   │   ├── welcome.tsx          # Welcome screen
@@ -75,23 +65,36 @@ healthcare-mobile/
 │   │   ├── new-password.tsx     # New password setup
 │   │   └── success.tsx          # Success screen after auth
 │   │
-│   ├── (tabs)/                  # Main app tabs
-│   │   ├── _layout.tsx          # Tab navigation layout
-│   │   ├── index.tsx            # Home tab
-│   │   ├── browse.tsx           # Browse products tab
-│   │   ├── cart.tsx             # Shopping cart tab
+│   ├── (tabs)/                  # Main app tabs for customers
+│   │   ├── _layout.tsx          # Tab navigation layout (Home, Browse, Cart, Profile)
+│   │   ├── index.tsx            # Home tab (dashboard, orders, offers)
+│   │   ├── browse.tsx           # Browse products tab (catalog, filtering)
+│   │   ├── cart.tsx             # Shopping cart tab (cart, checkout, shipping)
 │   │   └── profile/             # Profile tab and related screens
 │   │       ├── _layout.tsx      # Profile navigation layout
-│   │       ├── index.tsx        # Main profile screen
+│   │       ├── index.tsx        # Main profile screen (settings, orders)
 │   │       ├── edit.tsx         # Edit profile
 │   │       ├── address.tsx      # Manage addresses
 │   │       ├── language.tsx     # Language settings
-│   │       └── payment.tsx      # Payment methods
+│   │       ├── payment.tsx      # Payment methods
+│   │       └── orders.tsx       # Order history and tracking
 │   │
-│   ├── _layout.tsx              # Root navigation layout
-│   └── +not-found.tsx          # 404 error screen
+│   ├── (vendor)/                # Vendor dashboard and management screens
+│   │   ├── _layout.tsx          # Vendor navigation layout
+│   │   ├── index.tsx            # Vendor dashboard (balance, stats, actions)
+│   │   ├── products.tsx         # Manage products (add, edit, delete)
+│   │   └── profile/             # Vendor profile and settings
+│   │       ├── _layout.tsx      # Vendor profile navigation layout
+│   │       ├── index.tsx        # Vendor profile main screen
+│   │       ├── edit.tsx         # Edit vendor profile
+│   │       ├── address.tsx      # Vendor address management
+│   │       ├── language.tsx     # Language settings
+│   │       └── payment.tsx      # Withdrawal/payment methods
+│   │
+│   ├── _layout.tsx              # Root navigation layout (handles auth and main app)
+│   └── +not-found.tsx           # 404 error screen
 │
-├── components/                   # Reusable UI components
+├── components/                  # Reusable UI components (buttons, headers, cards)
 │   ├── Button.tsx
 │   ├── Divider.tsx
 │   ├── GreenCartLogo.tsx
@@ -99,49 +102,41 @@ healthcare-mobile/
 │   ├── Input.tsx
 │   └── ProductCard.tsx
 │
-├── constants/                    # App constants
-│   └── Colors.tsx               # Color definitions
+├── constants/                   # App-wide constants (colors, fonts, etc.)
+│   └── Colors.tsx
 │
-├── context/                      # React Context providers
+├── context/                     # React Context providers for global state
+│   ├── AuthContext.tsx          # Authentication state management
 │   └── CartContext.tsx          # Shopping cart state management
 │
-├── data/                        # Static data
-│   └── products.ts              # Product catalog
+├── data/                        # Static/mock data for the app
+│   ├── products.ts              # Product catalog
+│   └── mockDatabase.ts          # Hardcoded users, orders, etc.
 │
-└── types/                       # TypeScript type definitions
-    └── product.ts               # Product-related types
+├── hooks/                       # Custom React hooks (e.g., useAuth, useCart)
+│   └── useDebounce.ts           # Example: debounce hook for search
+│
+├── types/                       # TypeScript type definitions
+│   ├── product.ts               # Product-related types
+│   └── user.ts                  # User-related types
+│
+├── utils/                       # Utility functions (validation, formatting, etc.)
+│   └── validation.ts            # Example: form validation helpers
+│
+├── assets/                      # Images, icons, and other static assets
+│   └── images/                  # App images
+│
+├── package.json                 # Project dependencies and scripts
+├── app.json                     # Expo app configuration
+└── README.md                    # Project documentation
 ```
 
-### Key Aspects:
-
-1. **File-based Routing**:
-   - Uses Expo Router with file-based routing
-   - Directory names in parentheses (e.g., `(auth)`, `(tabs)`) create route groups
-   - _layout.tsx files define navigation layouts for different sections
-
-2. **Authentication Flow** `(auth)/`:
-   - Complete authentication flow with welcome, sign-in, sign-up
-   - Password recovery and OTP verification
-   - Success screen for completed authentication
-
-3. **Main App Navigation** `(tabs)/`:
-   - Tab-based navigation with home, browse, cart, and profile sections
-   - Profile section has its own nested navigation stack
-   - Each tab represents a major feature of the app
-
-4. **Component Organization**:
-   - Reusable components kept in components
-   - Context providers in context for state management
-   - Constants and types in their respective directories
-
-5. **Data Management**:
-   - Static data like product catalog in data
-   - Types defined in types
-   - Cart state managed through CartContext
-
-### Navigation Flow:
-
-1. App starts at root _layout.tsx
-2. Unauthenticated users are directed to `(auth)` group
-3. After authentication, users access the `(tabs)` group
-4. Profile section has modal screens for settings and preferences
+**Key Structure Points:**
+- **Route Groups:** Parentheses in folder names (e.g., `(auth)`, `(tabs)`, `(vendor)`) define navigation groups for Expo Router. This enables role-based navigation and modular screen organization.
+- **_layout.tsx:** Each group has its own layout for navigation stack configuration (e.g., tabs for customers, dashboard for vendors).
+- **Components:** All UI elements are modular and reusable, promoting consistency and maintainability.
+- **Context:** State management for authentication and cart is handled via React Context, providing global access to user and cart data.
+- **Data:** Static/mock data is used for products, users, and orders. This can be replaced with real backend APIs in the future.
+- **Hooks & Utils:** Custom hooks and utility functions help encapsulate logic and keep components clean.
+- **Types:** TypeScript types ensure type safety and clarity across the codebase.
+- **Assets:** All images and icons are stored in the assets directory for easy management.
