@@ -59,12 +59,7 @@ export default function SignInScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <HeaderBar 
-        title="Sign In" 
-        rightComponent={
-          <TouchableOpacity onPress={handleCreateAccount}>
-            <Text style={styles.createAccountText}>Create Account</Text>
-          </TouchableOpacity>
-        }
+        title="Sign In"
       />
       
       <ScrollView 
@@ -130,6 +125,14 @@ export default function SignInScreen() {
                 isLoading={isSubmitting}
                 style={styles.signInButton}
               />
+
+              <TouchableOpacity
+                onPress={handleCreateAccount}
+                style={styles.createAccountLink}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.createAccountLinkText}>Create Account</Text>
+              </TouchableOpacity>
               
               <Divider text="or continue with" />
               
@@ -161,11 +164,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 20,
   },
-  createAccountText: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 14,
-    color: Colors.primary,
-  },
   formContainer: {
     marginTop: 20,
   },
@@ -189,6 +187,23 @@ const styles = StyleSheet.create({
   },
   signInButton: {
     marginBottom: 16,
+  },
+  createAccountLink: {
+    borderWidth: 1,
+    borderColor: Colors.primary,
+    borderRadius: 8,
+    paddingVertical: 10,
+    alignItems: 'center',
+    marginBottom: 20,
+    marginTop: 4,
+    backgroundColor: Colors.white,
+  },
+  createAccountLinkText: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 15,
+    color: Colors.primary,
+    textAlign: 'center',
+    letterSpacing: 0.5,
   },
   socialButtonsContainer: {
     flexDirection: 'row',
