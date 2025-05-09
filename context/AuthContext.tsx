@@ -9,7 +9,7 @@ interface AuthState {
 }
 
 interface AuthContextType extends AuthState {
-  signIn: (email: string, password: string) => Promise<Omit<User, 'password'>>;
+  signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, fullName: string, role: UserRole) => Promise<void>;
   signOut: () => void;
 }
@@ -33,31 +33,26 @@ function useProtectedRoute(user: Omit<User, 'password'> | null) {
   React.useEffect(() => {
     const inAuthGroup = segments[0] === '(auth)';
     const inVendorGroup = segments[0] === '(vendor)';
-    
-    // Use a timeout to ensure navigation doesn't happen during render
-    const timer = setTimeout(() => {
-      if (!user && !inAuthGroup) {
-        // Redirect to the sign-in page
-        router.replace('/(auth)');
-      } else if (user) {
-        if (inAuthGroup) {
-          // Redirect away from auth group pages if authenticated
-          if (user.role === 'vendor') {
-            router.replace('/(vendor)');
-          } else {
-            router.replace('/(tabs)');
-          }
-        } else if (inVendorGroup && user.role !== 'vendor') {
-          // Redirect away from vendor pages if not a vendor
-          router.replace('/(tabs)');
-        } else if (!inVendorGroup && !inAuthGroup && user.role === 'vendor') {
-          // Redirect to vendor pages if vendor tries to access customer pages
+
+    if (!user && !inAuthGroup) {
+      // Redirect to the sign-in page.
+      router.replace('/(auth)/signin');
+    } else if (user) {
+      if (inAuthGroup) {
+        // Redirect away from auth group pages if authenticated
+        if (user.role === 'vendor') {
           router.replace('/(vendor)');
+        } else {
+          router.replace('/(tabs)');
         }
+      } else if (inVendorGroup && user.role !== 'vendor') {
+        // Redirect away from vendor pages if not a vendor
+        router.replace('/(tabs)');
+      } else if (!inVendorGroup && user.role === 'vendor') {
+        // Redirect to vendor pages if vendor tries to access customer pages
+        router.replace('/(vendor)');
       }
-    }, 0);
-    
-    return () => clearTimeout(timer);
+    }
   }, [user, segments]);
 }
 
@@ -79,7 +74,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       const { password: _, ...userWithoutPassword } = user;
       setState({ user: userWithoutPassword, isLoading: false });
-      return userWithoutPassword;
     } catch (error) {
       setState(prev => ({ ...prev, isLoading: false }));
       throw error;

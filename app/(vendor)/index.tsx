@@ -15,6 +15,7 @@ import { useAuth } from '@/context/AuthContext';
 import Button from '@/components/Button';
 import HeaderBar from '@/components/HeaderBar';
 import VendorProfileScreen from './profile';
+import ProductsScreen from './products';
 
 // Mock transaction data
 const transactions = [
@@ -33,6 +34,10 @@ export default function VendorDashboard() {
 
   const handleProfilePress = () => {
     setShowProfileModal(true);
+  };
+
+  const handleProductsPress = () => {
+    setShowProductsModal(true);
   };
 
   return (
@@ -86,7 +91,7 @@ export default function VendorDashboard() {
         <View style={styles.actionsContainer}>
           <TouchableOpacity
             style={[styles.actionCard, styles.activeActionCard]}
-            onPress={() => setShowProductsModal(true)}
+            onPress={handleProductsPress}
           >
             <Package size={24} color={Colors.white} />
             <Text style={[styles.actionText, styles.activeActionText]}>Manage Products</Text>
@@ -129,9 +134,7 @@ export default function VendorDashboard() {
         onRequestClose={() => setShowProductsModal(false)}
       >
         <SafeAreaView style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text>Products management content goes here</Text>
-          </View>
+          <ProductsScreen onClose={() => setShowProductsModal(false)} />
         </SafeAreaView>
       </Modal>
 

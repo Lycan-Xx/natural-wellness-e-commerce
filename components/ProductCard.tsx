@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { Star } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import { Product } from '@/types/product';
 

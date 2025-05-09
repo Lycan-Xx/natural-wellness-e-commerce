@@ -107,11 +107,12 @@ export default function ProfileScreen() {
         <SettingsSection
           title="General"
           items={[
-            {
-              icon: <ShoppingBag size={20} color={Colors.text.secondary} />,
-              title: "My Orders",
-              onPress: () => {},
-            },
+{
+  icon: <ShoppingBag size={20} color={Colors.text.secondary} />,
+  title: "My Orders",
+  onPress: () => router.push('/profile/orders'),
+},
+
             {
               icon: <Heart size={20} color={Colors.text.secondary} />,
               title: "Wishlist",
