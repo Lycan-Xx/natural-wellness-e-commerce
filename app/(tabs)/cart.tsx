@@ -14,6 +14,7 @@ import Colors from '@/constants/Colors';
 import Button from '@/components/Button';
 import HeaderBar from '@/components/HeaderBar';
 import { useCart } from '@/context/CartContext';
+import PaymentModal from '@/components/PaymentModal'; // Import the new payment modal
 
 const shippingOptions = [
   {
@@ -41,6 +42,7 @@ export default function CartScreen() {
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [showShippingModal, setShowShippingModal] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false); // New state
   const [selectedShipping, setSelectedShipping] = useState(shippingOptions[0]);
 
   const handleQuantityChange = (
@@ -55,8 +57,8 @@ export default function CartScreen() {
   };
 
   const handleProceedToPayment = () => {
-    // Implement payment flow
-    console.log('Proceeding to payment');
+    // Open the payment modal
+    setShowPaymentModal(true);
   };
 
   const finalTotal = total + selectedShipping.price;
@@ -272,6 +274,13 @@ export default function CartScreen() {
 
       {renderCheckoutModal()}
       {renderShippingModal()}
+      
+      {/* Payment Modal */}
+      <PaymentModal 
+        visible={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        finalTotal={finalTotal}
+      />
     </SafeAreaView>
   );
 }
