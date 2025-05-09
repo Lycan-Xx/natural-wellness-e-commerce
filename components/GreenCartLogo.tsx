@@ -1,17 +1,39 @@
+// GreenCartLogo.jsx - Redesigned Logo Component
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import Svg, { Path, Circle, G } from 'react-native-svg';
 import Colors from '@/constants/Colors';
 
-const MortarPestle = () => (
+const GroceryCartIcon = () => (
   <Svg width={64} height={64} viewBox="0 0 24 24" fill="none">
+    {/* Cart Base */}
     <Path
-      d="M5 14c.5 3 2.5 5 5.5 5s5-2 5.5-5M12 9V3m0 3H8M12 6h4M4.2 13.5L6 15.5M19.8 13.5L18 15.5M7 8H3.5C2.5 8 2 8.5 2 9.5C2 12 4 14 7 14h10c3 0 5-2 5-4.5c0-1-.5-1.5-1.5-1.5H17"
+      d="M2 3h2l2.5 12h10L19 6H6"
       stroke={Colors.primary}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
+    
+    {/* Cart Wheels */}
+    <Circle cx="8.5" cy="19" r="1.5" fill={Colors.primary} />
+    <Circle cx="17" cy="19" r="1.5" fill={Colors.primary} />
+    
+    {/* Leaf Accent */}
+    <G transform="translate(12, 9)">
+      <Path
+        d="M0,-3 C3,-3 3,0 3,3 C0,3 -3,3 -3,0 C-3,-3 0,-3 0,-3 Z"
+        fill="none"
+        stroke={Colors.primary}
+        strokeWidth="1.5"
+      />
+      <Path
+        d="M0,3 C0,0 0,-3 0,-3"
+        stroke={Colors.primary}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </G>
   </Svg>
 );
 
@@ -19,8 +41,8 @@ interface GreenCartLogoProps {
   size?: 'small' | 'medium' | 'large';
 }
 
-const GreenCartLogo: React.FC<GreenCartLogoProps> = ({ 
-  size = 'medium' 
+const GreenCartLogo: React.FC<GreenCartLogoProps> = ({
+  size = 'medium'
 }) => {
   const getLogoSize = () => {
     switch (size) {
@@ -35,10 +57,27 @@ const GreenCartLogo: React.FC<GreenCartLogoProps> = ({
     }
   };
 
+  const getTextSize = () => {
+    switch (size) {
+      case 'small':
+        return styles.smallText;
+      case 'medium':
+        return styles.mediumText;
+      case 'large':
+        return styles.largeText;
+      default:
+        return styles.mediumText;
+    }
+  };
+
   return (
     <View style={[styles.container, getLogoSize()]}>
-      <MortarPestle />
-      <Text style={styles.logoText}>GreenCart</Text>
+      <GroceryCartIcon />
+      <View style={styles.textContainer}>
+        <Text style={[styles.logoText, getTextSize()]}>
+          <Text style={styles.greenText}>Green</Text>Cart
+        </Text>
+      </View>
     </View>
   );
 };
@@ -49,19 +88,39 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   smallLogo: {
-    paddingVertical: 8,
+    paddingVertical: 6,
   },
   mediumLogo: {
-    paddingVertical: 16,
+    paddingVertical: 12,
   },
   largeLogo: {
-    paddingVertical: 24,
+    paddingVertical: 20,
+  },
+  textContainer: {
+    alignItems: 'center',
   },
   logoText: {
     fontFamily: 'Poppins-Bold',
-    fontSize: 20,
-    color: Colors.primary,
+    color: Colors.text.primary,
     marginTop: 8,
+  },
+  greenText: {
+    color: Colors.primary,
+  },
+  smallText: {
+    fontSize: 16,
+  },
+  mediumText: {
+    fontSize: 20,
+  },
+  largeText: {
+    fontSize: 28,
+  },
+  tagline: {
+    fontFamily: 'Poppins-Light',
+    fontSize: 12,
+    color: Colors.text.secondary,
+    marginTop: 2,
   },
 });
 
