@@ -11,7 +11,7 @@ import {
   FlatList,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ArrowRight, Star } from 'lucide-react-native';
+import { ArrowRight } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import Button from '@/components/Button';
 import { useAuth } from '@/context/AuthContext';
@@ -47,7 +47,8 @@ export default function HomeScreen() {
   }, []);
 
   const handleTrackOrder = (orderId: string) => {
-    console.log('Track order:', orderId);
+    // Navigate to profile page and open tracking modal
+    router.push({ pathname: '/profile', params: { tracking: orderId } });
   };
 
   const handleShopNow = () => {
@@ -64,10 +65,6 @@ export default function HomeScreen() {
         <Text style={styles.popularName} numberOfLines={1}>{item.name}</Text>
         <View style={styles.popularPriceRow}>
           <Text style={styles.popularPrice}>${item.price.toFixed(2)}</Text>
-          <View style={styles.ratingContainer}>
-            <Star size={16} color="#FFD700" fill="#FFD700" />
-            <Text style={styles.ratingText}>4.5</Text>
-          </View>
         </View>
       </View>
     </TouchableOpacity>
@@ -164,6 +161,13 @@ export default function HomeScreen() {
         {/* My Orders */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>My orders</Text>
+          <TouchableOpacity
+            style={styles.seeAllButton}
+            onPress={() => router.push('/profile/orders')}
+          >
+            <Text style={styles.seeAllText}>See all</Text>
+            <ArrowRight size={20} color={Colors.text.primary} />
+          </TouchableOpacity>
         </View>
 
         <FlatList

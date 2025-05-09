@@ -10,11 +10,10 @@ import {
   Switch,
   Modal,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import {
   ShoppingBag,
-  Heart,
   ShoppingCart,
   MapPin,
   CreditCard,
@@ -64,6 +63,7 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({ title, items }) => (
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
   const { user, signOut } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -119,6 +119,13 @@ export default function ProfileScreen() {
     },
   ];
 
+  React.useEffect(() => {
+    if (params.tracking) {
+      setShowTrackingModal(true);
+      // Optionally, you can select a specific order here using params.tracking
+    }
+  }, [params.tracking]);
+
   const handleEditProfile = () => {
     router.push('/profile/edit');
   };
@@ -135,6 +142,12 @@ export default function ProfileScreen() {
 
   const handleCancelLogout = () => {
     setShowLogoutModal(false);
+  };
+
+  const handleCloseTrackingModal = () => {
+    setShowTrackingModal(false);
+    // Remove the tracking param from the URL after closing
+    router.setParams({ tracking: undefined });
   };
 
   return (
@@ -163,11 +176,6 @@ export default function ProfileScreen() {
               icon: <ShoppingBag size={20} color={Colors.text.secondary} />,
               title: "My Orders",
               onPress: () => router.push('/profile/orders'),
-            },
-            {
-              icon: <Heart size={20} color={Colors.text.secondary} />,
-              title: "Wishlist",
-              onPress: () => {},
             },
             {
               icon: <PlaneIcon size={20} color={Colors.text.secondary} />,
@@ -258,13 +266,13 @@ export default function ProfileScreen() {
         visible={showTrackingModal}
         animationType="slide"
         transparent={false}
-        onRequestClose={() => setShowTrackingModal(false)}
+        onRequestClose={handleCloseTrackingModal}
       >
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
           <HeaderBar
             title="My Orders"
             showBackButton
-            onBackPress={() => setShowTrackingModal(false)}
+            onBackPress={handleCloseTrackingModal}
           />
           <ScrollView style={{ flex: 1 }}>
             {ordersByDate.map((group, idx) => (
