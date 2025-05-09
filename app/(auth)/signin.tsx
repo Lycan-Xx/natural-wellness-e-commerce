@@ -27,17 +27,22 @@ export default function SignInScreen() {
   const [error, setError] = useState<string | null>(null);
   
   const handleCreateAccount = () => {
-    router.push('/signup');
+    router.push('/(auth)/signup');
   };
 
   const handleForgotPassword = () => {
-    router.push('/forgot-password');
+    router.push('/(auth)/forgot-password');
   };
 
   const handleSignIn = async (values: any) => {
     try {
-      await signIn(values.email, values.password);
-      // Navigation will be handled by the AuthContext
+      const user = await signIn(values.email, values.password);
+      // Use more direct navigation with replacement
+      if (user.role === 'vendor') {
+        router.replace('/(vendor)');
+      } else {
+        router.replace('/(tabs)');
+      }
     } catch (err: any) {
       setError(err.message);
     }

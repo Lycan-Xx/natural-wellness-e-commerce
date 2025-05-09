@@ -9,11 +9,11 @@ export default function WelcomeScreen() {
   const router = useRouter();
 
   const handleSignUp = () => {
-    router.push('/signup');
+    router.push('/(auth)/signup');
   };
 
   const handleSignIn = () => {
-    router.push('/signin');
+    router.push('/(auth)/signin');
   };
 
   return (
