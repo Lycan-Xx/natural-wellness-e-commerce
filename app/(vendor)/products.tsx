@@ -8,7 +8,6 @@ import {
   Modal,
   Image,
   Alert,
-  TextInput,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
@@ -31,15 +30,45 @@ export default function ProductsScreen({ onClose }: { onClose: () => void }) {
   const [products, setProducts] = useState<Product[]>([
     {
       id: '1',
-      name: 'Aloe Vera Plant',
-      price: 19.99,
+      name: 'Aloe Vera',
+      price: 200,
       image: 'https://images.pexels.com/photos/4505161/pexels-photo-4505161.jpeg',
     },
     {
       id: '2',
-      name: 'Lavender Bundle',
-      price: 12.99,
+      name: 'Lavender Oil',
+      price: 500,
       image: 'https://images.pexels.com/photos/6621472/pexels-photo-6621472.jpeg',
+    },
+    {
+      id: '3',
+      name: 'Chamomile Tea',
+      price: 150,
+      image: 'https://images.pexels.com/photos/1417945/pexels-photo-1417945.jpeg',
+    },
+    {
+      id: '4',
+      name: 'Peppermint Balm',
+      price: 250,
+      image: 'https://images.pexels.com/photos/678414/pexels-photo-678414.jpeg',
+    },
+    {
+      id: '5',
+      name: 'Eucalyptus Oil',
+      price: 350,
+      image: 'https://images.pexels.com/photos/161599/pexels-photo-161599.jpeg',
+    },
+    {
+      id: '6',
+      name: 'Rose Water',
+      price: 180,
+      image: 'https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg',
+    },
+    {
+      id: '7',
+      name: 'Turmeric Powder',
+      price: 120,
+      image: 'https://images.pexels.com/photos/461382/pexels-photo-461382.jpeg',
     },
   ]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -171,35 +200,39 @@ export default function ProductsScreen({ onClose }: { onClose: () => void }) {
         title="Manage Products"
         showBackButton
         onBackPress={onClose}
-        rightComponent={
-          <TouchableOpacity onPress={handleAddProduct}>
-            <Plus size={24} color={Colors.primary} />
-          </TouchableOpacity>
-        }
       />
+      <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={handleAddProduct}
+        >
+          <Plus size={18} color="#fff" style={{ marginRight: 8 }} />
+          <Text style={styles.addButtonText}>Add Product</Text>
+        </TouchableOpacity>
 
-      <ScrollView style={styles.content}>
         {products.map(product => (
           <View key={product.id} style={styles.productCard}>
-            <Image source={{ uri: product.image }} style={styles.productImage} />
             <View style={styles.productInfo}>
               <Text style={styles.productName}>{product.name}</Text>
-              <Text style={styles.productPrice}>${product.price.toFixed(2)}</Text>
+              <Text style={styles.productPrice}>${product.price}</Text>
+              
+              <View style={styles.actionButtons}>
+                <TouchableOpacity
+                  onPress={() => handleEditProduct(product)}
+                  style={styles.editButton}
+                >
+                  <Text style={styles.buttonText}>Edit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => handleDeleteProduct(product.id)}
+                  style={styles.deleteButton}
+                >
+                  <Text style={styles.buttonText}>Delete</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={styles.actionButtons}>
-              <TouchableOpacity
-                onPress={() => handleEditProduct(product)}
-                style={styles.actionButton}
-              >
-                <Edit2 size={20} color={Colors.primary} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => handleDeleteProduct(product.id)}
-                style={styles.actionButton}
-              >
-                <Trash2 size={20} color={Colors.error} />
-              </TouchableOpacity>
-            </View>
+            
+            <Image source={{ uri: product.image }} style={styles.productImage} />
           </View>
         ))}
       </ScrollView>
@@ -268,7 +301,7 @@ export default function ProductsScreen({ onClose }: { onClose: () => void }) {
                   const filtered = text.replace(/[^0-9.]/g, '');
                   setFormData(prev => ({ ...prev, price: filtered }));
                 }}
-                placeholder="0.00"
+                placeholder="0"
                 keyboardType="decimal-pad"
               />
 
@@ -289,59 +322,96 @@ export default function ProductsScreen({ onClose }: { onClose: () => void }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: '#fff',
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
   },
   content: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
+  },
+  contentContainer: {
+    paddingVertical: 20,
+    alignItems: 'center',
+  },
+  addButton: {
+    backgroundColor: '#19703E',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderRadius: 16, // reduced from 100 to 1
+    marginBottom: 24,
+    width: '80%',
+    alignItems: 'center',
+    flexDirection: 'row', // to align icon and text horizontally
+    justifyContent: 'center',
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   productCard: {
     flexDirection: 'row',
-    backgroundColor: Colors.white,
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#F0F0F0',
+    justifyContent: 'space-between',
   },
   productImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 8,
+    width: 80,
+    height: 80,
+    resizeMode: 'contain',
   },
   productInfo: {
     flex: 1,
-    marginLeft: 12,
+    marginRight: 12,
   },
   productName: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 16,
-    color: Colors.text.primary,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#000',
+    marginBottom: 4,
   },
   productPrice: {
-    fontFamily: 'Poppins-Bold',
-    fontSize: 14,
-    color: Colors.primary,
-    marginTop: 4,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#000',
+    marginBottom: 12,
   },
   actionButtons: {
     flexDirection: 'row',
-    alignItems: 'center',
+    marginTop: 8,
   },
-  actionButton: {
-    padding: 8,
-    marginLeft: 8,
+  editButton: {
+    backgroundColor: '#B6F5C6', // light green
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginRight: 8,
+  },
+  deleteButton: {
+    backgroundColor: '#FFB6B6', // light red
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  buttonText: {
+    fontSize: 14,
+    color: '#000',
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: '#fff',
   },
   modalContent: {
     padding: 20,
@@ -349,7 +419,7 @@ const styles = StyleSheet.create({
   imageUpload: {
     width: '100%',
     height: 200,
-    backgroundColor: Colors.white,
+    backgroundColor: '#F8F8F8',
     borderRadius: 12,
     marginBottom: 20,
     overflow: 'hidden',
@@ -363,9 +433,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   uploadText: {
-    fontFamily: 'Poppins-Medium',
     fontSize: 14,
-    color: Colors.text.secondary,
+    color: '#777',
     marginTop: 8,
   },
   imagePreview: {

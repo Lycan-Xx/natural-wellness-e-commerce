@@ -15,7 +15,6 @@ import { useAuth } from '@/context/AuthContext';
 import {
   ShoppingBag,
   MapPin,
-  CreditCard,
   Moon,
   LogOut,
   Globe,
@@ -32,7 +31,6 @@ import Button from '@/components/Button';
 import EditProfileScreen from './edit';
 import AddressScreen from './address';
 import LanguageScreen from './language';
-import PaymentMethodsScreen from './payment';
 
 interface SettingsSectionProps {
   title: string;
@@ -75,7 +73,6 @@ export default function VendorProfileScreen({ onClose }: VendorProfileScreenProp
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const handleEditProfile = () => {
     setShowEditModal(true);
@@ -137,11 +134,6 @@ export default function VendorProfileScreen({ onClose }: VendorProfileScreenProp
               icon: <MapPin size={20} color={Colors.text.secondary} />,
               title: "Vendor Address",
               onPress: () => setShowAddressModal(true),
-            },
-            {
-              icon: <CreditCard size={20} color={Colors.text.secondary} />,
-              title: "Withdrawal options",
-              onPress: () => setShowPaymentModal(true),
             },
             {
               icon: <Moon size={20} color={Colors.text.secondary} />,
@@ -234,17 +226,6 @@ export default function VendorProfileScreen({ onClose }: VendorProfileScreenProp
         >
           <SafeAreaView style={styles.modalContainer}>
             <LanguageScreen onClose={() => setShowLanguageModal(false)} />
-          </SafeAreaView>
-        </Modal>
-
-        {/* Payment Modal */}
-        <Modal
-          visible={showPaymentModal}
-          animationType="slide"
-          onRequestClose={() => setShowPaymentModal(false)}
-        >
-          <SafeAreaView style={styles.modalContainer}>
-            <PaymentMethodsScreen onClose={() => setShowPaymentModal(false)} />
           </SafeAreaView>
         </Modal>
 

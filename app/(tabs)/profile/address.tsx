@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
-import { MapPin, Plus, Edit2, Trash2 } from 'lucide-react-native';
+import { MapPin, Plus, Edit2, Trash2, Check } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
@@ -40,8 +40,8 @@ export default function AddressScreen() {
     address: '',
   });
   const [addresses, setAddresses] = useState([
-    { id: '1', type: 'Home', address: '123 Green Street, Plant City, 12345' },
-    { id: '2', type: 'Work', address: '456 Office Road, Business District, 67890' },
+    { id: '1', type: 'Home', address: '123 Green Street, Plant City, 12345', isDefault: true },
+    { id: '2', type: 'Work', address: '456 Office Road, Business District, 67890', isDefault: false },
   ]);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -54,6 +54,7 @@ export default function AddressScreen() {
       address: `${formData.address}, ${formData.locality}, ${formData.state}, ${
         countries.find(c => c.id === formData.country)?.name
       }`,
+      isDefault: isEditing ? editingAddress.isDefault : addresses.length === 0, // Make first address default
     };
 
     if (isEditing) {
@@ -92,6 +93,10 @@ export default function AddressScreen() {
   };
 
   const handleDelete = (addressId) => {
+    // Check if it's the default address
+    const addressToDelete = addresses.find(addr => addr.id === addressId);
+    const isDefaultAddress = addressToDelete?.isDefault;
+
     Alert.alert(
       'Delete Address',
       'Are you sure you want to delete this address?',
@@ -100,9 +105,29 @@ export default function AddressScreen() {
         { 
           text: 'Delete', 
           style: 'destructive',
-          onPress: () => setAddresses(addresses.filter(addr => addr.id !== addressId))
+          onPress: () => {
+            const updatedAddresses = addresses.filter(addr => addr.id !== addressId);
+            
+            // If we deleted the default address and there are other addresses,
+            // make the first one the default
+            if (isDefaultAddress && updatedAddresses.length > 0) {
+              updatedAddresses[0].isDefault = true;
+            }
+            
+            setAddresses(updatedAddresses);
+          }
         },
       ]
+    );
+  };
+
+  const handleSetDefault = (addressId) => {
+    // Update all addresses to set the selected one as default
+    setAddresses(
+      addresses.map(addr => ({
+        ...addr,
+        isDefault: addr.id === addressId
+      }))
     );
   };
 
@@ -190,12 +215,33 @@ export default function AddressScreen() {
           />
           <ScrollView style={styles.modalContent}>
             {addresses.map((address) => (
-              <View key={address.id} style={styles.addressCard}>
-                <MapPin size={24} color={Colors.text.secondary} />
+              <View key={address.id} style={[
+                styles.addressCard,
+                address.isDefault && styles.defaultAddressCard
+              ]}>
+                <View style={styles.leftSection}>
+                  <MapPin size={24} color={address.isDefault ? Colors.primary : Colors.text.secondary} />
+                  {address.isDefault && (
+                    <View style={styles.defaultBadge}>
+                      <Text style={styles.defaultText}>Default</Text>
+                    </View>
+                  )}
+                </View>
+                
                 <View style={styles.addressInfo}>
                   <Text style={styles.addressType}>{address.type}</Text>
                   <Text style={styles.addressText}>{address.address}</Text>
+                  
+                  {!address.isDefault && (
+                    <TouchableOpacity 
+                      onPress={() => handleSetDefault(address.id)}
+                      style={styles.setDefaultButton}
+                    >
+                      <Text style={styles.setDefaultText}>Set as Default</Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
+                
                 <View style={styles.addressActions}>
                   <TouchableOpacity 
                     onPress={() => handleEdit(address)}
@@ -270,9 +316,30 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  defaultAddressCard: {
+    borderWidth: 1,
+    borderColor: Colors.primary,
+    backgroundColor: '#F5FAFF',
+  },
+  leftSection: {
+    alignItems: 'center',
+    marginRight: 4,
+  },
+  defaultBadge: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginTop: 4,
+  },
+  defaultText: {
+    color: Colors.white,
+    fontSize: 10,
+    fontFamily: 'Poppins-Medium',
+  },
   addressInfo: {
     flex: 1,
-    marginLeft: 12,
+    marginLeft: 8,
   },
   addressType: {
     fontFamily: 'Poppins-Medium',
@@ -284,6 +351,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.text.secondary,
     marginTop: 4,
+  },
+  setDefaultButton: {
+    marginTop: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  setDefaultText: {
+    color: Colors.primary,
+    fontSize: 12,
+    fontFamily: 'Poppins-Medium',
   },
   addressActions: {
     flexDirection: 'row',
