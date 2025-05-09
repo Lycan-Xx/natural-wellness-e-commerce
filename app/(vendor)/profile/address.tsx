@@ -35,10 +35,32 @@ interface AddressScreenProps {
 export default function AddressScreen({ onClose }: AddressScreenProps) {
   const [formData, setFormData] = useState({
     country: 'ng',
-    state: '',
-    locality: '',
+    state: states['ng'][0], // set default state
+    locality: localities[states['ng'][0]][0], // set default locality
     address: '',
   });
+
+  // Update state and locality when country changes
+  const handleCountryChange = (country: string) => {
+    const firstState = states[country][0];
+    const firstLocality = localities[firstState]?.[0] || '';
+    setFormData({
+      ...formData,
+      country,
+      state: firstState,
+      locality: firstLocality,
+    });
+  };
+
+  // Update locality when state changes
+  const handleStateChange = (state: string) => {
+    const firstLocality = localities[state]?.[0] || '';
+    setFormData({
+      ...formData,
+      state,
+      locality: firstLocality,
+    });
+  };
 
   const handleSave = () => {
     console.log('Address saved:', formData);
@@ -58,7 +80,7 @@ export default function AddressScreen({ onClose }: AddressScreenProps) {
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={formData.country}
-            onValueChange={(value) => setFormData({ ...formData, country: value })}
+            onValueChange={handleCountryChange}
           >
             {countries.map((country) => (
               <Picker.Item
@@ -74,9 +96,9 @@ export default function AddressScreen({ onClose }: AddressScreenProps) {
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={formData.state}
-            onValueChange={(value) => setFormData({ ...formData, state: value })}
+            onValueChange={handleStateChange}
           >
-            {states[formData.country as keyof typeof states].map((state) => (
+            {(states[formData.country] || []).map((state) => (
               <Picker.Item key={state} label={state} value={state} />
             ))}
           </Picker>
@@ -88,7 +110,7 @@ export default function AddressScreen({ onClose }: AddressScreenProps) {
             selectedValue={formData.locality}
             onValueChange={(value) => setFormData({ ...formData, locality: value })}
           >
-            {formData.state && localities[formData.state as keyof typeof localities]?.map((local) => (
+            {(localities[formData.state] || []).map((local) => (
               <Picker.Item key={local} label={local} value={local} />
             ))}
           </Picker>

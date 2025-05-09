@@ -31,6 +31,7 @@ import {
 } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import Button from '@/components/Button';
+import HeaderBar from '@/components/HeaderBar';
 
 interface SettingsSectionProps {
   title: string;
@@ -66,6 +67,57 @@ export default function ProfileScreen() {
   const { user, signOut } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showTrackingModal, setShowTrackingModal] = useState(false);
+  const [showOrderStatusModal, setShowOrderStatusModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+
+  const ordersByDate = [
+    {
+      date: 'March 12, 2023',
+      orders: [
+        {
+          id: '434324MX',
+          status: 'On Progress',
+          shipment: 'Kencana Express',
+          estimate: '20 Feb, 2023',
+          address: 'Plum Street, San Francisco, California 93244',
+          time: '13:20PM',
+        },
+        {
+          id: '123456AB',
+          status: 'Delivered',
+          shipment: 'FedEx',
+          estimate: '15 Feb, 2023',
+          address: 'Maple Avenue, Los Angeles, California 90001',
+          time: '10:00AM',
+        },
+        {
+          id: '789012CD',
+          status: 'Shipped',
+          shipment: 'DHL',
+          estimate: '18 Feb, 2023',
+          address: 'Oak Street, New York, New York 10001',
+          time: '14:45PM',
+        },
+        {
+          id: '345678EF',
+          status: 'In Transit',
+          shipment: 'UPS',
+          estimate: '22 Feb, 2023',
+          address: 'Pine Road, Chicago, Illinois 60601',
+          time: '16:30PM',
+        },
+        {
+          id: '901234GH',
+          status: 'Pending',
+          shipment: 'USPS',
+          estimate: '25 Feb, 2023',
+          address: 'Cedar Lane, Houston, Texas 77001',
+          time: '09:15AM',
+        },
+      ],
+    },
+  ];
 
   const handleEditProfile = () => {
     router.push('/profile/edit');
@@ -107,12 +159,11 @@ export default function ProfileScreen() {
         <SettingsSection
           title="General"
           items={[
-{
-  icon: <ShoppingBag size={20} color={Colors.text.secondary} />,
-  title: "My Orders",
-  onPress: () => router.push('/profile/orders'),
-},
-
+            {
+              icon: <ShoppingBag size={20} color={Colors.text.secondary} />,
+              title: "My Orders",
+              onPress: () => router.push('/profile/orders'),
+            },
             {
               icon: <Heart size={20} color={Colors.text.secondary} />,
               title: "Wishlist",
@@ -121,7 +172,7 @@ export default function ProfileScreen() {
             {
               icon: <PlaneIcon size={20} color={Colors.text.secondary} />,
               title: "Tracking",
-              onPress: () => {},
+              onPress: () => setShowTrackingModal(true),
             },
             {
               icon: <ShoppingCart size={20} color={Colors.text.secondary} />,
@@ -202,6 +253,121 @@ export default function ProfileScreen() {
           ]}
         />
       </ScrollView>
+
+      <Modal
+        visible={showTrackingModal}
+        animationType="slide"
+        transparent={false}
+        onRequestClose={() => setShowTrackingModal(false)}
+      >
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+          <HeaderBar
+            title="My Orders"
+            showBackButton
+            onBackPress={() => setShowTrackingModal(false)}
+          />
+          <ScrollView style={{ flex: 1 }}>
+            {ordersByDate.map((group, idx) => (
+              <View key={idx} style={styles.orderGroup}>
+                <Text style={styles.orderGroupDate}>{group.date}</Text>
+                {group.orders.map((order, oidx) => (
+                  <TouchableOpacity
+                    key={order.id}
+                    style={styles.orderItem}
+                    onPress={() => {
+                      setSelectedOrder(order);
+                      setShowOrderStatusModal(true);
+                    }}
+                  >
+                    <View style={styles.orderItemLeft}>
+                      <ShoppingBag size={24} color={Colors.primary} />
+                      <View style={{ marginLeft: 12 }}>
+                        <Text style={styles.orderId}>#{order.id}</Text>
+                        <Text style={styles.orderStatus}>{order.status}</Text>
+                      </View>
+                    </View>
+                    <ChevronRight size={20} color={Colors.text.secondary} />
+                  </TouchableOpacity>
+                ))}
+              </View>
+            ))}
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
+
+      <Modal
+        visible={showOrderStatusModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowOrderStatusModal(false)}
+      >
+        <View style={styles.statusModalOverlay}>
+          <View style={styles.statusModalContent}>
+            <HeaderBar
+              title="Tracking"
+              showBackButton
+              onBackPress={() => setShowOrderStatusModal(false)}
+            />
+            {selectedOrder && (
+              <View style={styles.statusOrderBox}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                  <ShoppingBag size={24} color={Colors.primary} />
+                  <Text style={[styles.orderId, { marginLeft: 8 }]}>{`#${selectedOrder.id}`}</Text>
+                  <Text style={styles.statusProgress}>{selectedOrder.status}</Text>
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <View>
+                    <Text style={styles.statusLabel}>Estimate delivery</Text>
+                    <Text style={styles.statusValue}>{selectedOrder.estimate}</Text>
+                  </View>
+                  <View>
+                    <Text style={styles.statusLabel}>Shipment</Text>
+                    <Text style={styles.statusValue}>{selectedOrder.shipment}</Text>
+                  </View>
+                </View>
+              </View>
+            )}
+            <View style={styles.statusSteps}>
+              <View style={styles.statusStepRow}>
+                <View style={styles.statusStepIconBox}>
+                  <ShoppingBag size={20} color={Colors.primary} />
+                </View>
+                <View style={styles.statusStepLine} />
+                <View style={styles.statusStepIconBox}>
+                  <PlaneIcon size={20} color={Colors.primary} />
+                </View>
+                <View style={styles.statusStepLine} />
+                <View style={styles.statusStepIconBox}>
+                  <ShoppingCart size={20} color={Colors.primary} />
+                </View>
+                <View style={styles.statusStepLine} />
+                <View style={[styles.statusStepIconBox, { borderColor: Colors.border }]}>
+                  <ShoppingBag size={20} color={Colors.border} />
+                </View>
+              </View>
+              <View style={styles.statusStepLabels}>
+                <Text style={styles.statusStepLabel}>Ordered</Text>
+                <Text style={styles.statusStepLabel}>Shipped</Text>
+                <Text style={styles.statusStepLabel}>In Transit</Text>
+                <Text style={styles.statusStepLabel}>Delivered</Text>
+              </View>
+            </View>
+            <View style={{ marginTop: 24 }}>
+              <Text style={styles.timelineTitle}>Packet In Delivery</Text>
+              {[1, 2, 3, 4, 5].map((_, idx) => (
+                <View key={idx} style={styles.timelineRow}>
+                  <View style={styles.timelineDot} />
+                  <View style={styles.timelineContent}>
+                    <Text style={styles.timelineStatus}>Order In Transit. March 12</Text>
+                    <Text style={styles.timelineAddress}>{selectedOrder?.address}</Text>
+                  </View>
+                  <Text style={styles.timelineTime}>{selectedOrder?.time}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       <Modal
         visible={showLogoutModal}
@@ -337,5 +503,188 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     backgroundColor: Colors.error,
+  },
+  trackingHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: Colors.white,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    justifyContent: 'space-between',
+  },
+  trackingTitle: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 18,
+    color: Colors.text.primary,
+  },
+  orderGroup: {
+    marginTop: 24,
+    paddingHorizontal: 20,
+  },
+  orderGroupDate: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 15,
+    color: Colors.text.secondary,
+    marginBottom: 8,
+  },
+  orderItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.white,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 10,
+    justifyContent: 'space-between',
+  },
+  orderItemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  orderId: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 15,
+    color: Colors.text.primary,
+  },
+  orderStatus: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 13,
+    color: Colors.text.secondary,
+    marginTop: 2,
+  },
+  statusModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+  },
+  statusModalContent: {
+    backgroundColor: Colors.white,
+    borderRadius: 16,
+    width: '100%',
+    maxWidth: 370,
+    padding: 0,
+    overflow: 'hidden',
+  },
+  statusHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    justifyContent: 'space-between',
+    backgroundColor: Colors.white,
+  },
+  statusTitle: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 18,
+    color: Colors.text.primary,
+  },
+  statusOrderBox: {
+    padding: 20,
+    backgroundColor: Colors.background,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  statusProgress: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 13,
+    color: Colors.primary,
+    marginLeft: 8,
+    backgroundColor: Colors.primary + '11',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  statusLabel: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 12,
+    color: Colors.text.secondary,
+  },
+  statusValue: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 13,
+    color: Colors.text.primary,
+    marginTop: 2,
+  },
+  statusSteps: {
+    padding: 20,
+    backgroundColor: Colors.white,
+  },
+  statusStepRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  statusStepIconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 2,
+    borderColor: Colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.white,
+  },
+  statusStepLine: {
+    flex: 1,
+    height: 2,
+    backgroundColor: Colors.primary,
+    marginHorizontal: 2,
+  },
+  statusStepLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
+  },
+  statusStepLabel: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 11,
+    color: Colors.text.secondary,
+    width: 60,
+    textAlign: 'center',
+  },
+  timelineTitle: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 15,
+    color: Colors.text.primary,
+    marginBottom: 12,
+    marginLeft: 20,
+  },
+  timelineRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingHorizontal: 20,
+    marginBottom: 16,
+  },
+  timelineDot: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: Colors.primary,
+    marginTop: 4,
+    marginRight: 12,
+  },
+  timelineContent: {
+    flex: 1,
+  },
+  timelineStatus: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 13,
+    color: Colors.text.primary,
+  },
+  timelineAddress: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 12,
+    color: Colors.text.secondary,
+    marginTop: 2,
+  },
+  timelineTime: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 12,
+    color: Colors.text.secondary,
+    marginLeft: 8,
+    marginTop: 2,
   },
 });
