@@ -1,9 +1,10 @@
 # GreenCart: A Dual-Role Mobile Commerce Solution
 
-![GreenCart Logo](https://via.placeholder.com/150x150?text=GreenCart)
-![GreenCart Logo](https://via.placeholder.com/150x150?text=GreenCart)
-![GreenCart Logo](https://via.placeholder.com/150x150?text=GreenCart)
-
+<div align="center">
+  <img src="assets/scrennshots/Screenshot_1%20(1).jpg" alt="GreenCart Welcome Screen" width="250"/>
+  <img src="assets/scrennshots/Screenshot_1%20(2).jpg" alt="GreenCart Sign In Screen" width="250"/>
+  <img src="assets/scrennshots/Screenshot_1%20(3).jpg" alt="GreenCart Home Screen" width="250"/>
+</div>
 
 ## Quick Start - Test Credentials
 
