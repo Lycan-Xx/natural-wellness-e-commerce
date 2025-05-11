@@ -23,7 +23,12 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
     if (onBackPress) {
       onBackPress();
     } else {
-      router.back();
+      // Always go to welcome screen if on sign in page
+      if (title === 'Sign In') {
+        router.replace('/(auth)/welcome');
+      } else {
+        router.back();
+      }
     }
   };
 

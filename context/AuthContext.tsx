@@ -35,8 +35,8 @@ function useProtectedRoute(user: Omit<User, 'password'> | null) {
     const inVendorGroup = segments[0] === '(vendor)';
 
     if (!user && !inAuthGroup) {
-      // Redirect to the sign-in page.
-      router.replace('/(auth)/signin');
+      // Redirect to the welcome page for unauthenticated users.
+      router.replace('/(auth)/welcome');
     } else if (user) {
       if (inAuthGroup) {
         // Redirect away from auth group pages if authenticated
