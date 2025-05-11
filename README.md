@@ -6,6 +6,18 @@
   <img src="assets/scrennshots/Screenshot_1%20(3).jpg" alt="GreenCart Home Screen" width="250"/>
 </div>
 
+
+## Live Preview with Expo Go
+
+Scan this QR code with the Expo Go app:
+
+![Expo Preview QR Code](assets/images/expo-QR.png)
+
+Or click this link:
+
+https://expo.dev/preview/update?message=%20This%20is%20the%20third%20official%20build%20but%20the%20first%20stable%2C%20hopefully%20without%20any%20errors&updateRuntimeVersion=1.0.0&createdAt=2025-05-11T08%3A25%3A36.608Z&slug=exp&projectId=3db94a47-b125-4768-bc23-ee62e023fce3&group=a5f3b4a8-2676-42aa-91ed-46fc52657d5d
+
+
 ## Quick Start - Test Credentials
 
 Use these credentials to quickly test the application:

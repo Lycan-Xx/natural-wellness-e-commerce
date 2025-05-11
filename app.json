@@ -37,6 +37,12 @@
     "owner": "lycan_xx",
     "android": {
       "package": "com.lycan_xx.greencart"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/3db94a47-b125-4768-bc23-ee62e023fce3"
     }
   }
 }
