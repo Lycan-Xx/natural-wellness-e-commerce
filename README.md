@@ -7,7 +7,7 @@
 </div>
 
 
-## Live Preview with Expo Go
+## Live Preview with Expo Go (latest SDK 53)
 
 Scan this QR code with the Expo Go app:
 
@@ -15,13 +15,9 @@ Scan this QR code with the Expo Go app:
 
 Or click this link:
 
-https://expo.dev/preview/update?message=%20This%20is%20the%20third%20official%20build%20but%20the%20first%20stable%2C%20hopefully%20without%20any%20errors&updateRuntimeVersion=1.0.0&createdAt=2025-05-11T08%3A25%3A36.608Z&slug=exp&projectId=3db94a47-b125-4768-bc23-ee62e023fce3&group=a5f3b4a8-2676-42aa-91ed-46fc52657d5d
+https://expo.dev/preview/update?message=Made%20some%20changes%20to%20the%20authcontext%20to%20forcefully%20redirect%20unauthorized%20users%20to%20the%20welcome%20screen.%20also%20fixed%20some%20dependncy%20&updateRuntimeVersion=1.0.0&createdAt=2025-05-11T13%3A37%3A31.141Z&slug=green-cart&projectId=3db94a47-b125-4768-bc23-ee62e023fce3&group=9c1f1c27-653e-44f3-8a50-3b76a22db450
 
 
-
-## Note: 
-
-The preview above is for expo SDK 52 as 
 ## Quick Start - Test Credentials
 
 Use these credentials to quickly test the application:
