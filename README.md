@@ -7,13 +7,31 @@
 </div>
 
 
-## Live Preview with Expo Go (latest SDK 53)
 
-Scan this QR code with the Expo Go app:
+
+## Live Preview with Expo Go (SDK 53)
+
+GreenCart is built with the latest Expo SDK 53. To preview the app:
+
+1. **Install Expo Go**
+   - For Android: [Download from Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent)
+   - For iOS: [Download from App Store](https://apps.apple.com/us/app/expo-go/id982107779)
+
+2. **Scan & Preview**
+   - Open your device's camera (iOS) or the Expo Go app (Android)
+   - Scan the QR code below:
 
 ![Expo Preview QR Code](assets/images/expo-QR.png)
 
-Or click this link:
+3. **Important Preview Tips**
+   - After scanning, look for an "Advanced" section below the preview window
+   - You'll see two options: "Development Build" and "Expo Go"
+   - Try "Development Build" first
+   - If preview doesn't work with "Development Build", switch to "Expo Go" and scan again
+   
+> **Note**: This project uses Expo SDK 53. Make sure you have the latest version of Expo Go installed for compatibility.
+
+Alternatively, click this link:
 
 https://expo.dev/preview/update?message=Made%20some%20changes%20to%20the%20authcontext%20to%20forcefully%20redirect%20unauthorized%20users%20to%20the%20welcome%20screen.%20also%20fixed%20some%20dependncy%20&updateRuntimeVersion=1.0.0&createdAt=2025-05-11T13%3A37%3A31.141Z&slug=green-cart&projectId=3db94a47-b125-4768-bc23-ee62e023fce3&group=9c1f1c27-653e-44f3-8a50-3b76a22db450
 
@@ -41,6 +59,7 @@ Use these credentials to quickly test the application:
 - [Authentication & User Roles](#authentication--user-roles)
 - [Pages & Navigation](#pages--navigation)
 - [Installation & Development](#installation--development)
+- [Deployment with EAS](#deployment-with-eas)
 - [How I Built It](#how-i-built-it)
 - [Challenges Faced](#challenges-faced)
 - [Accomplishments](#accomplishments)
@@ -337,7 +356,7 @@ The `AuthContext.tsx` provides a central authentication state that:
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start the Expo development server |
+| `npm run dev` | Start the Expo development server (SDK 53) |
 | `npm run android` | Start on Android emulator |
 | `npm run ios` | Start on iOS simulator (macOS only) |
 | `npm run web` | Start on web browser |
@@ -345,6 +364,88 @@ The `AuthContext.tsx` provides a central authentication state that:
 | `npm run reset-project` | Reset to a clean project structure |
 
 ---
+
+## Deployment with EAS
+
+> **Important Note**: The classic `expo publish` command has been deprecated in favor of EAS (Expo Application Services). EAS provides a more robust, scalable solution for building and deploying Expo apps, with features like:
+> - Automated builds for iOS and Android
+> - Enhanced version control
+> - Better CI/CD integration
+> - Improved caching and build performance
+> - Advanced configuration options
+
+### Prerequisites for EAS Deployment
+
+1. Install EAS CLI globally:
+   ```bash
+   npm install -g eas-cli
+   ```
+
+2. Log in to your Expo account:
+   ```bash
+   eas login
+   ```
+
+3. Configure your project:
+   ```bash
+   eas init
+   ```
+
+### Deployment Steps
+
+1. **Configure EAS Build**
+   Create or modify `eas.json` in your project root:
+   ```json
+   {
+     "build": {
+       "preview": {
+         "distribution": "internal",
+         "android": {
+           "buildType": "apk"
+         },
+         "ios": {
+           "simulator": true
+         }
+       },
+       "production": {}
+     }
+   }
+   ```
+
+2. **Create a Build**
+   - For internal testing:
+     ```bash
+     eas build -p android --profile preview
+     ```
+   - For production:
+     ```bash
+     eas build --platform all
+     ```
+
+3. **Submit Updates**
+   - Create and submit an update:
+     ```bash
+     eas update --branch preview --message "Your update message"
+     ```
+   - For production channel:
+     ```bash
+     eas update --branch production --message "Production update"
+     ```
+
+4. **View Builds and Updates**
+   Visit [Expo.dev](https://expo.dev) to monitor your builds and updates in the dashboard.
+
+### Additional EAS Features
+
+- **Preview Builds**: Create internal testing builds with `eas build --profile preview`
+- **Custom Build Profiles**: Define multiple build configurations in `eas.json`
+- **Branch Management**: Manage different versions with update branches
+- **Automatic Updates**: Configure automatic updates through EAS Update
+
+For more detailed information, visit the [EAS Documentation](https://docs.expo.dev/eas/).
+
+---
+
 
 ## How I Built It
 
